@@ -1,9 +1,8 @@
 import { db } from "./database.server";
 import type { Database } from "./databaseSchema.server";
+import type { Tail, TryIndex } from "./helper";
 
-type Tail<T extends any[]> = T extends [infer _, ...infer R] ? R : never;
 type Tables = keyof Database;
-
 
 // Key manipulation types
 type Stringable = string | number | boolean | bigint | null;
@@ -17,9 +16,7 @@ type ComplexKeyToAlias<T extends string> = T extends `${string} ${As} ${infer Al
 
 type KeysOf<Table extends Tables> = keyof { [K in keyof Database[Table] as SimpleKeyToComplex<K>]: unknown };
 
-type TryIndex<T, K> = K extends keyof T ? T[K] : never;
-
-type FieldsOf<Table extends Tables, Keys extends KeysOf<Table>[]> = 
+type FieldsOf<Table extends Tables, Keys extends readonly KeysOf<Table>[]> = 
     Keys['length'] extends 0 ? {} : { [K in Keys[0] as ComplexKeyToAlias<K>]: TryIndex<Database[Table], ComplexKeyToSimple<Keys[0]>> } & FieldsOf<Table, Tail<Keys>>;
 
     
