@@ -1,5 +1,5 @@
 import { error } from "@sveltejs/kit";
-import type { IsUnion, Last, Tail } from "$lib/helper";
+import type { IsUnion, Last, Tail } from "$lib/ts/helper";
 
 export type BasicValidator = 'number' | 'string' | 'boolean';
 export type ObjectValidator = { [Key: string]: Validator };
