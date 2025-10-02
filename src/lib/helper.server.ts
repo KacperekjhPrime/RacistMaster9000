@@ -1,12 +1,12 @@
 // Indexes of elements returned from the controller box
-const NumberOfLapsIndex = 0;
-const LapCountersStartIndex = 1; // Starting index of remaining lap counters
-const LapCountersCount = 10; // The number of above mentioned counters
-const TimerIndex = 11; // Total time of a run
-const RunStartIndex = 12; // Button for start pressed
-const StartPhoto = 13; // Starting photocell
-const LapPhoto = 14; // Lap photocell
-const FinishPhoto = 15; // Finish photocell
+const numberOfLapsIndex = 0;
+const lapCountersStartIndex = 1; // Starting index of remaining lap counters
+const lapCountersCount = 10; // The number of above mentioned counters
+const timerIndex = 11; // Total time of a run
+const runStartIndex = 12; // Button for start pressed
+const startPhoto = 13; // Starting photocell
+const lapPhoto = 14; // Lap photocell
+const finishPhoto = 15; // Finish photocell
 
 export type ControllerData = {
     numberOfLaps: number;
@@ -66,16 +66,16 @@ function getBoolean(input: string): boolean {
 
 export default function parseData(input: string): ControllerData {
     const rows = getRows(input);
-    const time = parseTime(rows[TimerIndex]);
-    const remainingLaps = getRemainingLaps([...rows.slice(LapCountersStartIndex, LapCountersCount + LapCountersStartIndex)])
+    const time = parseTime(rows[timerIndex]);
+    const remainingLaps = getRemainingLaps([...rows.slice(lapCountersStartIndex, lapCountersCount + lapCountersStartIndex)])
 
     return {
-        numberOfLaps: parseInt(rows[NumberOfLapsIndex]),
+        numberOfLaps: parseInt(rows[numberOfLapsIndex]),
         lapsLeft: remainingLaps,
         timeMs: time,
-        hasStarted: getBoolean(rows[RunStartIndex]),
-        startTripped: getBoolean(rows[StartPhoto]),
-        lapTripped: getBoolean(rows[LapPhoto]),
-        finishTripped: getBoolean(rows[FinishPhoto])
+        hasStarted: getBoolean(rows[runStartIndex]),
+        startTripped: getBoolean(rows[startPhoto]),
+        lapTripped: getBoolean(rows[lapPhoto]),
+        finishTripped: getBoolean(rows[finishPhoto])
     }
 }
