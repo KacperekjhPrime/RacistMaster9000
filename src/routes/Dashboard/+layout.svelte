@@ -1,7 +1,7 @@
 <script lang="ts">
   import favicon from "$lib/assets/favicon.svg";
   import Sidebar from "$lib/components/navigation/sidebar.svelte";
-  import DummyThickData from "$lib/dummyThickData";
+  import DummyThickData from "$lib/ts/dummyThickData/dummyThickData";
   import "$lib/styles/global.css";
 
   let { children } = $props();

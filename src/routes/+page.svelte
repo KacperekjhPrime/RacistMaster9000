@@ -1,5 +1,5 @@
 <script lang="ts">
-  import DummyThickData from "../lib/dummyThickData";
+  import DummyThickData from "../lib/ts/dummyThickData/dummyThickData";
 </script>
 
 <svelte:head>
