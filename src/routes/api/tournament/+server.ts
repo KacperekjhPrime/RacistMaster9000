@@ -25,11 +25,20 @@ const selectRider = select('Riders', ['RiderId'])
     .where('Riders.RiderId = ?')
     .prepare<[number]>();
 
+const selectQueueEntries = select('Queue', ['QueuePosition', 'RideStateId'])
+    .join('Riders', ['RiderId', 'Name AS RiderName', 'Surname AS RiderSurname'] as const, 'RiderId')
+    .join('Gokart', ['GokartId', 'Name AS GokartName'] as const, 'GokartId')
+    .join('RideStates', ['RideStateId', 'State AS RideState'] as const, 'RideStateId')
+    .where('Queue.TournamentId = ?')
+    .orderBy('Queue.QueuePosition', true)
+    .prepare<[number]>();
+
 const insertTournament = insert('Tournament', ['Name', 'StartTimestamp', 'EndTimestamp', 'TournamentStateId'] as const)
     .prepare();
 
 const insertRiderTournament = insert('RiderTournaments', ['RiderId', 'TournamentId'] as const)
     .prepare();
+
 
 export function GET({ url }): Response {
     if (url.searchParams.has('id')) {
@@ -39,7 +48,8 @@ export function GET({ url }): Response {
 
         return json({
             ...tournament,
-            Riders: selectTournamentRiders.all(id)
+            Riders: selectTournamentRiders.all(id),
+            Queue: selectQueueEntries.all(id)
         })
     } else {
         return json(selectAllTournaments.all());
