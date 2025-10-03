@@ -3,7 +3,7 @@ import { insert, select } from "$lib/ts/queryBuilder";
 import { makeArray, validateRequestJSON } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
 
-const selectAllTournaments = select('Tournament', ['TournamentId', 'Name', 'StartTimestamp', 'EndTimestamp', 'TournamentStateId'])
+const selectAllTournaments = select('Tournaments', ['TournamentId', 'Name', 'StartTimestamp', 'EndTimestamp', 'TournamentStateId'])
     .join('TournamentState', ['State'], 'TournamentStateId')
     .prepare();
 
@@ -15,7 +15,7 @@ const selectRider = select('Riders', ['RiderId'])
     .where('Riders.RiderId = ?')
     .prepare<[number]>();
 
-const insertTournament = insert('Tournament', ['Name', 'StartTimestamp', 'EndTimestamp', 'TournamentStateId'] as const)
+const insertTournament = insert('Tournaments', ['Name', 'StartTimestamp', 'EndTimestamp', 'TournamentStateId'] as const)
     .prepare();
 
 const insertRiderTournament = insert('RiderTournaments', ['RiderId', 'TournamentId'] as const)

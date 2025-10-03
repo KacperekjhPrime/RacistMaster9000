@@ -3,9 +3,9 @@ import { validate } from "$lib/ts/validation.server";
 import { intParser } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
 
-const selectOneTournament = select('Tournament', ['TournamentId', 'Name', 'StartTimestamp', 'EndTimestamp', 'TournamentStateId'])
+const selectOneTournament = select('Tournaments', ['TournamentId', 'Name', 'StartTimestamp', 'EndTimestamp', 'TournamentStateId'])
     .join('TournamentState', ['State'], 'TournamentStateId')
-    .where('Tournament.TournamentId = ?')
+    .where('Tournaments.TournamentId = ?')
     .prepare<[number]>();
 
 const selectTournamentRiders = select('RiderTournaments', [])

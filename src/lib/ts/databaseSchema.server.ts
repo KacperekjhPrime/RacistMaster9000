@@ -1,5 +1,5 @@
 export type Database = {
-	Gokart: {
+	Gokarts: {
 		GokartId: number,
 		Name: string
 	},
@@ -40,7 +40,7 @@ export type Database = {
 		TournamentStateId: number,
 		State: string
 	},
-	Tournament: {
+	Tournaments: {
 		TournamentId: number,
 		Name: string,
 		StartTimestamp: number,
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS "QueueEntries" (
 	"Order"	INTEGER NOT NULL,
 	PRIMARY KEY("QueueEntryId" AUTOINCREMENT),
 	FOREIGN KEY("GokartId") REFERENCES "Gokarts"("GokartId"),
-	FOREIGN KEY("RideId") REFERENCES "Rides"("RideStateId"),
+	FOREIGN KEY("RideId") REFERENCES "Rides"("RideId"),
 	FOREIGN KEY("RiderId") REFERENCES "Riders"("RiderId")
 );
 CREATE TABLE IF NOT EXISTS "RideStates" (
@@ -122,4 +122,25 @@ INSERT OR REPLACE INTO "RideStates" VALUES (4,'Twoja mama zjadła jednego z zawo
 INSERT OR REPLACE INTO "TournamentState" VALUES (1,'Nie rozpoczęty');
 INSERT OR REPLACE INTO "TournamentState" VALUES (2,'W trakcie');
 INSERT OR REPLACE INTO "TournamentState" VALUES (3,'Zakończony');
+CREATE INDEX IF NOT EXISTS "QueueEntriesGokartId" ON "QueueEntries" (
+	"GokartId"	ASC
+);
+CREATE INDEX IF NOT EXISTS "QueueEntriesRideId" ON "QueueEntries" (
+	"RideId"	ASC
+);
+CREATE INDEX IF NOT EXISTS "QueueEntriesRiderId" ON "QueueEntries" (
+	"RiderId"	ASC
+);
+CREATE INDEX IF NOT EXISTS "RiderSchoolId" ON "Riders" (
+	"SchoolId"	ASC
+);
+CREATE INDEX IF NOT EXISTS "RiderTournamentsRiderId" ON "RiderTournaments" (
+	"RiderId"	ASC
+);
+CREATE INDEX IF NOT EXISTS "RiderTournamentsTournamentId" ON "RiderTournaments" (
+	"TournamentId"
+);
+CREATE INDEX IF NOT EXISTS "TournamentsTournamentStateId" ON "Tournaments" (
+	"TournamentStateId"	ASC
+);
 COMMIT;`
