@@ -1,36 +1,36 @@
+import { selectAllOrOne } from "$lib/ts/helper.js";
 import { insert, select } from "$lib/ts/queryBuilder";
-import { intParser, validateURLParams } from "$lib/ts/validation.server";
-import { error } from "@sveltejs/kit";
+import { validateRequestJSON } from "$lib/ts/validation.server";
+import { error, json } from "@sveltejs/kit";
 
-const selectAllStatement = select('Riders', ['RiderId', 'Name', 'Surname'] as const).prepare();
+const selectAllStatement = select('Riders', ['RiderId', 'Name', 'Surname'] as const)
+    .join('Schools', ['SchoolId', 'Name AS SchoolName', 'Acronym AS SchoolNameAcronym', 'City'] as const, 'SchoolId')
+    .prepare();
 
 const selectOneStatement = select('Riders', ['RiderId', 'Name', 'Surname'] as const)
     .join('Schools', ['SchoolId', 'Name AS SchoolName', 'Acronym AS SchoolNameAcronym', 'City'] as const, 'SchoolId')
     .where('Riders.RiderId = ?')
     .prepare<[number]>();
 
-const selectTournamentsStatement = select('RiderTournaments', [])
-    .join('Tournament', ['TournamentId', 'Name', 'StartTimestamp', 'EndTimestamp', 'TournamentStateId'], 'TournamentId')
-    .join('TournamentState', ['State'], 'TournamentStateId')
-    .where('RiderTournaments.RiderId = ?')
-    .prepare<[number]>();
-
-
 const insertStatement = insert('Riders', ['Name', 'Surname', 'SchoolId'] as const).prepare();
 
-export function GET({ url }) {
-    if (url.searchParams.has('id')) {
-        const { id } = validateURLParams(url.searchParams, { id: intParser })
+const selectSchoolStatement = select('Schools', ['SchoolId'])
+    .where('Schools.SchoolId = ?')
+    .prepare<[number]>()
 
+export function GET({ url }): Response {
+    return json(selectAllOrOne(url.searchParams, selectAllStatement, selectOneStatement));
+}
 
-        const rider = selectOneStatement.get(id);
-        if (rider === undefined) error(404);
+export async function POST({ request }): Promise<Response> {
+    const { name, surname, schoolId } = await validateRequestJSON(request, {
+        name: 'string',
+        surname: 'string',
+        schoolId: 'number'
+    });
 
-        return new Response(JSON.stringify({
-            ...rider,
-            Tournaments: selectTournamentsStatement.all(id)
-        }));
-    } else {
-        return new Response(JSON.stringify(selectAllStatement.all()));
-    }
+    if (selectSchoolStatement.get(schoolId) === undefined) error(404, 'School does not exist.');
+
+    const { lastInsertRowid } = insertStatement.run(name, surname, schoolId);
+    return json({ id: lastInsertRowid });
 }
