@@ -26,6 +26,7 @@ class SelectQueryBuilder<T, Fields> {
     #keys: string[];
     #joins: { table: string, using: string }[] = []
     #where = '';
+    #orderBy = '';
 
     constructor(from: string, keys: string[]) {
         this.#from = from;
@@ -61,6 +62,16 @@ class SelectQueryBuilder<T, Fields> {
     }
 
     /**
+     * Adds an ORDER BY clause to the query.
+     * @param column Column to order by
+     * @param ascending If true, the results will be sorted in ascending order, otherwise in descending
+     */
+    orderBy(column: string, ascending: boolean) {
+        this.#orderBy = ` ORDER BY ${column} ${ascending ? 'ASC' : 'DESC'}`;
+        return this;
+    }
+
+    /**
      * Creates an SQL statement string
      * @returns Statement string
      */
@@ -70,6 +81,7 @@ class SelectQueryBuilder<T, Fields> {
             statement += ` JOIN ${table} USING (${using})`;
         }
         statement += this.#where;
+        statement += this.#orderBy;
         return statement;
     }
 
