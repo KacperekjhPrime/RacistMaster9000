@@ -7,6 +7,7 @@ export type Database = {
 		QueueEntryId: number,
 		RiderId: number,
 		RideId: number,
+		GokartId: number,
 		Order: number
 	}
 	RideStates: {
@@ -59,8 +60,10 @@ CREATE TABLE IF NOT EXISTS "QueueEntries" (
 	"QueueEntryId"	INTEGER NOT NULL,
 	"RiderId"	INTEGER NOT NULL,
 	"RideId"	INTEGER NOT NULL,
+	"GokartId"	INTEGER NOT NULL,
 	"Order"	INTEGER NOT NULL,
 	PRIMARY KEY("QueueEntryId" AUTOINCREMENT),
+	FOREIGN KEY("GokartId") REFERENCES "Gokarts"("GokartId"),
 	FOREIGN KEY("RideId") REFERENCES "Rides"("RideStateId"),
 	FOREIGN KEY("RiderId") REFERENCES "Riders"("RiderId")
 );
