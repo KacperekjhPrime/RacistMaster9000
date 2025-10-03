@@ -6,11 +6,9 @@
   @param css - css class addedd to icon
   @param icon - 'icon' from 'icons' array
 -->
-<script module lang="ts">
-  /**
-   * Icons available in 'Icon'
-   */
-  export const icons = {
+
+<script lang="ts">
+  const icons = {
     circle: {
       viewBox: "0 -960 960 960",
       path: "M480.18-126.15q-73.39 0-138.06-27.89t-112.51-75.69q-47.84-47.81-75.65-112.29-27.81-64.48-27.81-137.8 0-73.39 27.89-138.06t75.69-112.51q47.81-47.84 112.29-75.65 64.48-27.81 137.8-27.81 73.39 0 138.06 27.89t112.51 75.69q47.84 47.8 75.65 112.29 27.81 64.48 27.81 137.8 0 73.39-27.89 138.06t-75.69 112.51q-47.8 47.84-112.29 75.65-64.48 27.81-137.8 27.81Zm-.21-36.93q132.3 0 224.63-92.3 92.32-92.3 92.32-224.59 0-132.3-92.3-224.63-92.3-92.32-224.59-92.32-132.3 0-224.63 92.3-92.32 92.3-92.32 224.59 0 132.3 92.3 224.63 92.3 92.32 224.59 92.32ZM480-480Z",
@@ -59,19 +57,23 @@
       viewBox: "0 -960 960 960",
       path: "m480-390.15-147.38-148h294.76L480-390.15Z",
     },
+    close: {
+      viewBox: "0 -960 960 960",
+      path: "M249-201.26 201.26-249l231-231-231-231L249-758.74l231 231 231-231L758.74-711l-231 231 231 231L711-201.26l-231-231-231 231Z",
+    },
   };
-</script>
-
-<script lang="ts">
+  const colors = {
+    inherit: {},
+    info: {},
+    warning: {},
+    error: {},
+    success: {},
+  };
   let {
     size = "24px",
-    fill = "#e8eaed",
-    css = "",
     icon = "star",
   }: {
     size: string;
-    fill: string;
-    css: string;
     icon: keyof typeof icons;
   } = $props();
 </script>
@@ -81,8 +83,13 @@
   height={size}
   viewBox={icons[icon].viewBox}
   width={size}
-  class={css}
-  {fill}
 >
   <path d={icons[icon].path} />
 </svg>
+
+<style>
+  svg,
+  svg path {
+    fill: inherit;
+  }
+</style>
