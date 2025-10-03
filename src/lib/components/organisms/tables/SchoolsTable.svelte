@@ -12,9 +12,9 @@
   </div>
   {#each schools as school}
     <div class="row">
-      <span class="cell">{school.name}</span>
-      <span class="cell">{school.city}</span>
-      <span class="cell">{school.acronym}</span>
+      <span class="cell">{school.Name}</span>
+      <span class="cell">{school.City}</span>
+      <span class="cell">{school.Acronym}</span>
     </div>
   {/each}
   <div class="row">

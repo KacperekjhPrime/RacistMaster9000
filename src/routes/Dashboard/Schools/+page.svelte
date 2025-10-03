@@ -4,25 +4,25 @@
 
   let schools: Array<School> = [
     {
-      name: "Zespół Szkół Technicznych i Ogólnokształcących Imienia Jana Pawła II",
-      city: "Limanowa",
-      acronym: "ZSTiO",
+      Name: "Zespół Szkół Technicznych i Ogólnokształcących Imienia Jana Pawła II",
+      City: "Limanowa",
+      Acronym: "ZSTiO",
     },{
-      name: "Zespół Szkół Technicznych i Ogólnokształcących Imienia Jana Pawła II",
-      city: "Limanowa",
-      acronym: "ZSTiO",
+      Name: "Zespół Szkół Technicznych i Ogólnokształcących Imienia Jana Pawła II",
+      City: "Limanowa",
+      Acronym: "ZSTiO",
     },{
-      name: "Zespół Szkół Technicznych i Ogólnokształcących Imienia Jana Pawła II",
-      city: "Limanowa",
-      acronym: "ZSTiO",
+      Name: "Zespół Szkół Technicznych i Ogólnokształcących Imienia Jana Pawła II",
+      City: "Limanowa",
+      Acronym: "ZSTiO",
     },{
-      name: "Zespół Szkół Technicznych i Ogólnokształcących Imienia Jana Pawła II",
-      city: "Limanowa",
-      acronym: "ZSTiO",
+      Name: "Zespół Szkół Technicznych i Ogólnokształcących Imienia Jana Pawła II",
+      City: "Limanowa",
+      Acronym: "ZSTiO",
     },{
-      name: "Zespół Szkół Technicznych i Ogólnokształcących Imienia Jana Pawła II",
-      city: "Limanowa",
-      acronym: "ZSTiO",
+      Name: "Zespół Szkół Technicznych i Ogólnokształcących Imienia Jana Pawła II",
+      City: "Limanowa",
+      Acronym: "ZSTiO",
     },
   ];
 </script>

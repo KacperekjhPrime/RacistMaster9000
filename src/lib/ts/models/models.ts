@@ -1,9 +1,16 @@
 export type School = {
-  name: string;
-  city: string;
-  acronym: string;
+  Name: string;
+  City: string;
+  Acronym: string;
 };
 
 export type Tournament = {
-  
+  Name: string;
+  StartTimestamp: string;
+  EndTimeStamp: string;
+  TournamentState: TournamentState;
+};
+
+export type TournamentState = {
+  State: string;
 };
