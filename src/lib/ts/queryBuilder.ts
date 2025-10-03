@@ -115,7 +115,7 @@ class InsertQueryBuilder<Table extends Tables, Values extends any[]> {
      * @returns Prepared statement
      */
     prepare() {
-        const statement = db.prepare<Values, number>(this.toString());
+        const statement = db.prepare<Values>(this.toString());
         return statement;
     }
 }
