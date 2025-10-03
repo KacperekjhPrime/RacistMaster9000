@@ -3,14 +3,12 @@ export type Database = {
 		GokartId: number,
 		Name: string
 	},
-	Queue: {
-		QueueId: number,
+	QueueEntries: {
+		QueueEntryId: number,
 		RiderId: number,
-		TournamentId: number,
-		QueuePosition: number,
-		GokartId: number,
-		RideStateId: number,
-	},
+		RideId: number,
+		Order: number
+	}
 	RideStates: {
 		RideStateId: number,
 		State: string
@@ -26,11 +24,20 @@ export type Database = {
 		Surname: string,
 		SchoolId: number
 	},
+	Rides: {
+		RideId: number,
+		TournamentId: number,
+		RideStateId: number
+	},
 	Schools: {
 		SchoolId: number,
 		Name: string,
 		City: string,
 		Acronym: string
+	},
+	TournamentState: {
+		TournamentStateId: number,
+		State: string
 	},
 	Tournament: {
 		TournamentId: number,
@@ -38,31 +45,24 @@ export type Database = {
 		StartTimestamp: number,
 		EndTimestamp: number,
 		TournamentStateId: number
-	},
-	TournamentState: {
-		TournamentStateId: number,
-		State: string
 	}
 }
 
 export const databaseSchema =
 `BEGIN TRANSACTION;
-CREATE TABLE IF NOT EXISTS "Gokart" (
+CREATE TABLE IF NOT EXISTS "Gokarts" (
 	"GokartId"	INTEGER NOT NULL,
 	"Name"	TEXT NOT NULL,
 	PRIMARY KEY("GokartId" AUTOINCREMENT)
 );
-CREATE TABLE IF NOT EXISTS "Queue" (
-	"QueueId"	INTEGER NOT NULL,
+CREATE TABLE IF NOT EXISTS "QueueEntries" (
+	"QueueEntryId"	INTEGER NOT NULL,
 	"RiderId"	INTEGER NOT NULL,
-	"TournamentId"	INTEGER NOT NULL,
-	"QueuePosition"	INTEGER NOT NULL,
-	"GokartId"	INTEGER NOT NULL,
-	"RideStateId"	INTEGER NOT NULL,
-	PRIMARY KEY("QueueId" AUTOINCREMENT),
-	FOREIGN KEY("GokartId") REFERENCES "Gokart"("GokartId"),
-	FOREIGN KEY("RideStateId") REFERENCES "RideStates"("RideStateId"),
-	FOREIGN KEY("TournamentId") REFERENCES "Tournament"("TournamentId")
+	"RideId"	INTEGER NOT NULL,
+	"Order"	INTEGER NOT NULL,
+	PRIMARY KEY("QueueEntryId" AUTOINCREMENT),
+	FOREIGN KEY("RideId") REFERENCES "Rides"("RideStateId"),
+	FOREIGN KEY("RiderId") REFERENCES "Riders"("RiderId")
 );
 CREATE TABLE IF NOT EXISTS "RideStates" (
 	"RideStateId"	INTEGER NOT NULL,
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS "RiderTournaments" (
 	"RiderId"	INTEGER NOT NULL,
 	"TournamentId"	INTEGER NOT NULL,
 	PRIMARY KEY("RiderTournamentsId" AUTOINCREMENT),
-	FOREIGN KEY("TournamentId") REFERENCES "Tournament"("TournamentId")
+	FOREIGN KEY("TournamentId") REFERENCES "Tournaments"("TournamentId")
 );
 CREATE TABLE IF NOT EXISTS "Riders" (
 	"RiderId"	INTEGER NOT NULL,
@@ -84,6 +84,14 @@ CREATE TABLE IF NOT EXISTS "Riders" (
 	PRIMARY KEY("RiderId" AUTOINCREMENT),
 	FOREIGN KEY("SchoolId") REFERENCES "Schools"
 );
+CREATE TABLE IF NOT EXISTS "Rides" (
+	"RideId"	INTEGER NOT NULL,
+	"TournamentId"	INTEGER NOT NULL,
+	"RideStateId"	INTEGER NOT NULL,
+	PRIMARY KEY("RideId" AUTOINCREMENT),
+	FOREIGN KEY("RideStateId") REFERENCES "RideStates"("RideStateId"),
+	FOREIGN KEY("TournamentId") REFERENCES "Tournaments"("TournamentId")
+);
 CREATE TABLE IF NOT EXISTS "Schools" (
 	"SchoolId"	INTEGER NOT NULL,
 	"Name"	TEXT NOT NULL,
@@ -91,7 +99,12 @@ CREATE TABLE IF NOT EXISTS "Schools" (
 	"Acronym"	TEXT NOT NULL,
 	PRIMARY KEY("SchoolId" AUTOINCREMENT)
 );
-CREATE TABLE IF NOT EXISTS "Tournament" (
+CREATE TABLE IF NOT EXISTS "TournamentState" (
+	"TournamentStateId"	INTEGER NOT NULL,
+	"State"	TEXT NOT NULL,
+	PRIMARY KEY("TournamentStateId" AUTOINCREMENT)
+);
+CREATE TABLE IF NOT EXISTS "Tournaments" (
 	"TournamentId"	INTEGER NOT NULL,
 	"Name"	TEXT NOT NULL,
 	"StartTimestamp"	INTEGER NOT NULL,
@@ -99,30 +112,12 @@ CREATE TABLE IF NOT EXISTS "Tournament" (
 	"TournamentStateId"	INTEGER NOT NULL,
 	PRIMARY KEY("TournamentId" AUTOINCREMENT)
 );
-CREATE TABLE IF NOT EXISTS "TournamentState" (
-	"TournamentStateId"	INTEGER NOT NULL,
-	"State"	TEXT NOT NULL,
-	PRIMARY KEY("TournamentStateId" AUTOINCREMENT)
-);
-CREATE INDEX IF NOT EXISTS "QueueGokartId" ON "Queue" (
-	"GokartId"	ASC
-);
-CREATE INDEX IF NOT EXISTS "QueueRideStatusId" ON "Queue" (
-	"RideStateId"	ASC
-);
-CREATE INDEX IF NOT EXISTS "QueueTournamentId" ON "Queue" (
-	"TournamentId"	ASC
-);
-CREATE INDEX IF NOT EXISTS "RiderSchoolId" ON "Riders" (
-	"SchoolId"	ASC
-);
-CREATE INDEX IF NOT EXISTS "RiderTournamentRiderd" ON "RiderTournaments" (
-	"RiderId"	ASC
-);
-CREATE INDEX IF NOT EXISTS "RiderTournamentTournamentId" ON "RiderTournaments" (
-	"TournamentId"	ASC
-);
-CREATE INDEX IF NOT EXISTS "TournamentTournamentStateId" ON "Tournament" (
-	"TournamentStateId"	ASC
-);
-COMMIT;`
+INSERT INTO "RideStates" VALUES (1,'Nie rozpoczęty');
+INSERT INTO "RideStates" VALUES (2,'W trakcie');
+INSERT INTO "RideStates" VALUES (3,'Zakończony');
+INSERT INTO "RideStates" VALUES (4,'Twoja mama zjadła jednego z zawodników');
+INSERT INTO "TournamentState" VALUES (1,'Nie rozpoczęty');
+INSERT INTO "TournamentState" VALUES (2,'W trakcie');
+INSERT INTO "TournamentState" VALUES (3,'Zakończony');
+COMMIT;
+`
