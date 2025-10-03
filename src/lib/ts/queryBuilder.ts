@@ -53,6 +53,8 @@ class SelectQueryBuilder<T, Fields> {
     where(condition: string) {
         if (this.#where.length > 0) {
             this.#where += ' AND';
+        } else {
+            this.#where = ' WHERE'
         }
         this.#where += ' ' + condition;
         return this;
