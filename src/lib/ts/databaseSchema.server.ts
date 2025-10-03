@@ -115,12 +115,11 @@ CREATE TABLE IF NOT EXISTS "Tournaments" (
 	"TournamentStateId"	INTEGER NOT NULL,
 	PRIMARY KEY("TournamentId" AUTOINCREMENT)
 );
-INSERT INTO "RideStates" VALUES (1,'Nie rozpoczęty');
-INSERT INTO "RideStates" VALUES (2,'W trakcie');
-INSERT INTO "RideStates" VALUES (3,'Zakończony');
-INSERT INTO "RideStates" VALUES (4,'Twoja mama zjadła jednego z zawodników');
-INSERT INTO "TournamentState" VALUES (1,'Nie rozpoczęty');
-INSERT INTO "TournamentState" VALUES (2,'W trakcie');
-INSERT INTO "TournamentState" VALUES (3,'Zakończony');
-COMMIT;
-`
+INSERT OR REPLACE INTO "RideStates" VALUES (1,'Nie rozpoczęty');
+INSERT OR REPLACE INTO "RideStates" VALUES (2,'W trakcie');
+INSERT OR REPLACE INTO "RideStates" VALUES (3,'Zakończony');
+INSERT OR REPLACE INTO "RideStates" VALUES (4,'Twoja mama zjadła jednego z zawodników');
+INSERT OR REPLACE INTO "TournamentState" VALUES (1,'Nie rozpoczęty');
+INSERT OR REPLACE INTO "TournamentState" VALUES (2,'W trakcie');
+INSERT OR REPLACE INTO "TournamentState" VALUES (3,'Zakończony');
+COMMIT;`
