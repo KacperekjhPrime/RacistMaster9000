@@ -29,3 +29,9 @@ button {
   background-color: transparent;
   cursor: pointer;
 }
+
+body {
+  width: 100vw;
+  height: fit-content;
+  margin: 0;
+}
