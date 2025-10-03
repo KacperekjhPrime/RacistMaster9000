@@ -1,20 +1,20 @@
-:root[data-theme="light"] {
+:root {
   --text: #081317;
   --background: #f3f9fb;
-  --primary: #114b5f;
-  --secondary: #9da4de;
-  --accent: #736fcf;
-}
-:root[data-theme="dark"] {
-  --text: #e8f3f7;
-  --background: #040a0b;
-  --primary: #a0dbee;
-  --secondary: #212863;
-  --accent: #353091;
-}
+  --primary: #00458f8f;
+  --secondary: #151419;
+  --accent: #151419;
+  /* Notification colors */
+  --info: var(--primary);
+  --success: #107667ed;
+  --error: #a63d2a82;
 
-:root {
   color: var(--text);
+  --borderRadius: 0.5rem;
+  --borderThickness: 0.125rem;
+  --letterSpacing: 0.2rem;
+  font-size: 16px;
+  font-family: sans-serif;
 }
 
 a {
@@ -28,10 +28,11 @@ button {
   outline: transparent;
   background-color: transparent;
   cursor: pointer;
+  color: inherit;
 }
 
 body {
-  width: 100vw;
   height: fit-content;
   margin: 0;
+  padding: 0;
 }
