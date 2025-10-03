@@ -1,21 +1,11 @@
 import { db } from "$lib/ts/database.server.js";
 import { insert, select } from "$lib/ts/queryBuilder";
-import { intParser, makeArray, validateRequestJSON, validateURLParams } from "$lib/ts/validation.server";
+import { makeArray, validateRequestJSON } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
 
 const selectAllTournaments = select('Tournament', ['TournamentId', 'Name', 'StartTimestamp', 'EndTimestamp', 'TournamentStateId'])
     .join('TournamentState', ['State'], 'TournamentStateId')
     .prepare();
-
-const selectOneTournament = select('Tournament', ['TournamentId', 'Name', 'StartTimestamp', 'EndTimestamp', 'TournamentStateId'])
-    .join('TournamentState', ['State'], 'TournamentStateId')
-    .where('Tournament.TournamentId = ?')
-    .prepare<[number]>();
-
-const selectTournamentRiders = select('RiderTournaments', [])
-    .join('Riders', ['RiderId', 'Name', 'Surname', 'SchoolId'], 'RiderId')
-    .where('RiderTournaments.TournamentId = ?')
-    .prepare<[number]>();
 
 const selectTournamentState = select('TournamentState', ['TournamentStateId'])
     .where('TournamentState.TournamentStateId = ?')
@@ -25,14 +15,6 @@ const selectRider = select('Riders', ['RiderId'])
     .where('Riders.RiderId = ?')
     .prepare<[number]>();
 
-const selectQueueEntries = select('Queue', ['QueuePosition', 'RideStateId'])
-    .join('Riders', ['RiderId', 'Name AS RiderName', 'Surname AS RiderSurname'] as const, 'RiderId')
-    .join('Gokart', ['GokartId', 'Name AS GokartName'] as const, 'GokartId')
-    .join('RideStates', ['RideStateId', 'State AS RideState'] as const, 'RideStateId')
-    .where('Queue.TournamentId = ?')
-    .orderBy('Queue.QueuePosition', true)
-    .prepare<[number]>();
-
 const insertTournament = insert('Tournament', ['Name', 'StartTimestamp', 'EndTimestamp', 'TournamentStateId'] as const)
     .prepare();
 
@@ -40,20 +22,8 @@ const insertRiderTournament = insert('RiderTournaments', ['RiderId', 'Tournament
     .prepare();
 
 
-export function GET({ url }): Response {
-    if (url.searchParams.has('id')) {
-        const { id } = validateURLParams(url.searchParams, { id: intParser });
-        const tournament = selectOneTournament.get(id);
-        if (tournament === undefined) error(404);
-
-        return json({
-            ...tournament,
-            Riders: selectTournamentRiders.all(id),
-            Queue: selectQueueEntries.all(id)
-        })
-    } else {
-        return json(selectAllTournaments.all());
-    }
+export function GET(): Response {
+    return json(selectAllTournaments.all());
 }
 
 export async function POST({ request }): Promise<Response> {

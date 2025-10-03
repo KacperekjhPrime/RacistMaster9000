@@ -28,21 +28,3 @@ export type UnionToIntersection<U> =
  * Keep in mind that TypeScript's `boolean` technically is an intersection of `true` and `false`
  */
 export type IsUnion<T, IfTrue, IfFalse> = [T] extends [UnionToIntersection<T>] ? IfFalse : IfTrue;
-
-/**
- * Checks if URL parameters contain `id` and if so returns the result of `oneStatement`, otherwise returns results of `allStatement`.
- * @param params URL parameters
- * @param allStatement SQL prepared statement to use if `id` parameter is not present 
- * @param oneStatement SQL prepared statement to use if `id` parameter is present 
- * @returns Object or array of objects
- */
-export function selectAllOrOne<T>(params: URLSearchParams, allStatement: BSQL3.Statement<[], T>, oneStatement: BSQL3.Statement<[number], T>): T | T[] {
-    if (params.has('id')) {
-        const { id } = validateURLParams(params, { id: intParser });
-        const result = oneStatement.get(id);
-        if (result === undefined) error(404);
-        return result;
-    } else {
-        return allStatement.all();
-    }
-}
