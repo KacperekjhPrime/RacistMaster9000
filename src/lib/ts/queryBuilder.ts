@@ -26,6 +26,7 @@ class SelectQueryBuilder<T, Fields> {
     #keys: string[];
     #joins: { table: string, using: string }[] = []
     #where = '';
+    #orderBy = '';
 
     constructor(from: string, keys: string[]) {
         this.#from = from;
@@ -53,8 +54,20 @@ class SelectQueryBuilder<T, Fields> {
     where(condition: string) {
         if (this.#where.length > 0) {
             this.#where += ' AND';
+        } else {
+            this.#where = ' WHERE'
         }
         this.#where += ' ' + condition;
+        return this;
+    }
+
+    /**
+     * Adds an ORDER BY clause to the query.
+     * @param column Column to order by
+     * @param ascending If true, the results will be sorted in ascending order, otherwise in descending
+     */
+    orderBy(column: string, ascending: boolean) {
+        this.#orderBy = ` ORDER BY ${column} ${ascending ? 'ASC' : 'DESC'}`;
         return this;
     }
 
@@ -68,6 +81,7 @@ class SelectQueryBuilder<T, Fields> {
             statement += ` JOIN ${table} USING (${using})`;
         }
         statement += this.#where;
+        statement += this.#orderBy;
         return statement;
     }
 
@@ -113,7 +127,7 @@ class InsertQueryBuilder<Table extends Tables, Values extends any[]> {
      * @returns Prepared statement
      */
     prepare() {
-        const statement = db.prepare<Values, number>(this.toString());
+        const statement = db.prepare<Values>(this.toString());
         return statement;
     }
 }

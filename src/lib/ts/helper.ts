@@ -6,6 +6,10 @@ export type Tail<T extends readonly any[]> = T extends readonly [infer _, ...inf
 /**
  * Returns the last element of a tuple type.
  */
+import BSQL3 from "better-sqlite3"
+import { intParser, makeOptional, validateURLParams } from "./validation.server";
+import { error } from "@sveltejs/kit";
+
 export type Last<T extends readonly any[]> = T extends readonly [...infer _, infer Last] ? Last : never;
 
 /**
