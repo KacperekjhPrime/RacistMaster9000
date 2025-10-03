@@ -1,5 +1,5 @@
 <script lang="ts">
-  import SchoolsTable from "$lib/components/tables/SchoolsTable.svelte";
+  import SchoolsTable from "$lib/components/organisms/tables/SchoolsTable.svelte";
   import type { School } from "$lib/ts/models/models";
 
   let schools: Array<School> = [

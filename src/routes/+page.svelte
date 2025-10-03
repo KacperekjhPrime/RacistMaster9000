@@ -1,5 +1,6 @@
 <script lang="ts">
-  import DummyThickData from "../lib/ts/dummyThickData/dummyThickData";
+  import Icon from "$lib/components/atoms/Icon.svelte";
+  import DummyThickData from "$lib/ts/dummyThickData/dummyThickData";
 </script>
 
 <svelte:head>
@@ -12,3 +13,5 @@
 </p>
 
 <footer>{DummyThickData.copyright}</footer>
+
+<Icon icon="refresh" css="" fill="black" size="4rem"></Icon>

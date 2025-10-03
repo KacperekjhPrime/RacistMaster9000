@@ -1,4 +1,17 @@
+<!--
+  @component
+  ### Unified icon display
+  @param size - size in css' units
+  @param fill - color of filling, currently required can be overriden in 'css' prop
+  @param css - css class addedd to icon
+  @param icon - 'icon' from 'icons' array
+-->
+
 <script lang="ts">
+  /**
+   * Unified icons display
+   * @param size: string - size in css units
+   */
   const icons = {
     circle: {
       viewBox: "0 -960 960 960",
