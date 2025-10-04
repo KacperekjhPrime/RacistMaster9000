@@ -2,6 +2,8 @@
   import NotificationCard from "$lib/components/cards/NotificationCard.svelte";
   import type { PageProps } from "./$types";
   import LinkCard from "$lib/components/cards/LinkCard.svelte";
+  import Sidebar from "$lib/components/navigation/Sidebar.svelte";
+  import DummyThickData from "$lib/ts/dummyThickData/dummyThickData";
 
   let { data }: PageProps = $props();
 </script>
@@ -53,34 +55,20 @@
 
 <h2>Link cards</h2>
 <div class="cards">
-  <LinkCard
-    color="success"
-    contents="contents"
-    title="title"
-    href="/"
-    icon="circle"
+  <LinkCard color="success" contents="contents" link="/" icon="circle"
   ></LinkCard>
 
-  <LinkCard color="info" contents="contents" title="title" href="/" icon="close"
+  <LinkCard color="info" contents="contents" link="/" icon="close"></LinkCard>
+
+  <LinkCard color="warning" contents="contents" link="/" icon="more_horizontal"
   ></LinkCard>
 
-  <LinkCard
-    color="warning"
-    contents="contents"
-    title="title"
-    href="/"
-    icon="more_horizontal"
-  ></LinkCard>
-
-  <LinkCard
-    color="error"
-    contents="contents"
-    title="title"
-    href="/"
-    icon="more_vertical"
+  <LinkCard color="error" contents="contents" link="/" icon="more_vertical"
   ></LinkCard>
 </div>
 <h2>End of showcase</h2>
+
+<Sidebar routes={DummyThickData.routes}></Sidebar>
 
 <style>
   .cards {
@@ -90,6 +78,7 @@
     grid-template-columns: 50% 50%;
     grid-template-rows: 50% 50%;
     row-gap: 1rem;
+    column-gap: 1rem;
     justify-content: center;
     align-items: center;
   }

@@ -6,9 +6,11 @@
   --accent: #222127;
   /* Notification colors */
   --info: var(--primary);
-  --success: #189D00;
-  --error: #ED0800;
-  --warning: #B6AA00;
+  --success: #189d00;
+  --error: #ed0800;
+  --warning: #b6aa00;
+
+  --uiLayer: 555;
 
   color: var(--text);
   --borderRadius: 0.5rem;

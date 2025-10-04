@@ -6,26 +6,24 @@
   import "./card.css";
 
   let {
-    title,
     contents,
     color,
-    href,
+    link,
     icon,
   }: {
-    title: string;
     contents: string;
     color: keyof typeof Colors;
-    href: string;
+    link: string;
     icon: keyof typeof Icons;
   } = $props();
 </script>
 
-<a class={Colors[color].class + " card"} {href}>
-  <div class="cardBody">
-    <div class="cardIcon">
+<a class={Colors[color].class + " card cardLink"} href={link}>
+  <div class="cardBody cardBodyReverse">
+    <div class="cardIcon cardIconReverse">
       <Icon size="70%" {icon} fill={color}></Icon>
     </div>
-    <div class="cardText cardTitle">
+    <div class="cardText cardTitle cardTitleReverse">
       {contents}
     </div>
   </div>
