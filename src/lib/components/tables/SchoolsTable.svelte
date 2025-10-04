@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { School } from "$lib/ts/models/models";
+  import type { School } from "$lib/ts/models/databaseModels";
 
   let { schools }: { schools: Array<School> } = $props();
 </script>

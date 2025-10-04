@@ -1,12 +1,33 @@
-const DummyThickData = {
+import type { SiteData } from "../models/siteData";
+
+const DummyThickData: SiteData = {
   title: "We racing ur mom",
   routes: [
-    { name: "Home", href: "/Dashboard" },
-    { name: "Gokarty", href: "/Dashboard/Gokarts" },
-    { name: "Info", href: "/Dashboard/Info" },
-    { name: "Queue", href: "/Dashboard/Queue" },
-    { name: "Schools", href: "/Dashboard/Schools" },
-    { name: "Tournaments", href: "/Dashboard/Tournaments" },
+    {
+      title: "Home",
+      link: "/Dashboard",
+      icon: "check",
+    },
+    {
+      title: "Gokarty",
+      link: "/Dashboard/Gokarts",
+      icon: "check",
+    },
+    {
+      title: "Queue",
+      link: "/Dashboard/Queue",
+      icon: "check",
+    },
+    {
+      title: "Schools",
+      link: "/Dashboard/Schools",
+      icon: "check",
+    },
+    {
+      title: "Tournaments",
+      link: "/Dashboard/Tournaments",
+      icon: "check",
+    },
   ],
   copyright: "© 2025 Copyright: Misex, sex i gosex",
 };

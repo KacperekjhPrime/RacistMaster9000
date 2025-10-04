@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { Tournament } from "$lib/ts/models/models";
+  import type { Tournament } from "$lib/ts/models/databaseModels";
 
   import Cell from "$lib/components/Cell.svelte";
 
