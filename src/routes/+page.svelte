@@ -1,5 +1,4 @@
 <script lang="ts">
-  import Icon from "$lib/components/atoms/Icon.svelte";
   import DummyThickData from "$lib/ts/dummyThickData/dummyThickData";
 </script>
 

@@ -9,7 +9,7 @@
 
 <script lang="ts">
   import Colors from "$lib/styles/colors";
-  import Icons from "../theming/icons";
+  import Icons from "$lib/components/icons/icons";
 
   let {
     size = "24px",

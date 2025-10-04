@@ -8,9 +8,5 @@ export type Tournament = {
   Name: string;
   StartTimestamp: string;
   EndTimeStamp: string;
-  TournamentState: TournamentState;
-};
-
-export type TournamentState = {
-  State: string;
+  TournamentState: string;
 };
