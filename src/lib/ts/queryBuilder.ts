@@ -10,15 +10,15 @@ type Opt<T> = T | '';
 type ToString<T> = T extends Stringable ? T : '';
 type As = 'as' | 'AS' | 'As' | 'aS';
 type AsFull = ` ${As} ${string}`;
-type RawKeyToComplex<T> = `${Opt<'"'>}${ToString<T>}${Opt<'"'>}${Opt<AsFull>}`;
-type RawKeyToBasic<T> = `${Opt<'"'>}${ToString<T>}${Opt<'"'>}`;
-type ComplexKeyToSimple<T extends string> = T extends `${Opt<'"'>}${infer Key}${Opt<'"'>}${AsFull}` ? Key : T;
-type ComplexKeyToAlias<T extends string> = T extends `${string} ${As} ${infer Alias}` ? Alias : T;
-type BasicKeyToRaw<T extends string> = T extends `${Opt<'"'>}${infer Key}${Opt<'"'>}` ? Key : T;
+type RawKeyToComplex<T> = `${ToString<T>}${Opt<AsFull>}` | `"${ToString<T>}"${Opt<AsFull>}`;
+type RawKeyToBasic<T> = ToString<T> | `"${ToString<T>}"`;
+type ComplexKeyToSimple<T> = T extends `${Opt<'"'>}${infer Key}${Opt<'"'>}${AsFull}` ? Key : T;
+type ComplexKeyToAlias<T> = T extends `${string} ${As} ${infer Alias}` ? Alias : T;
+type BasicKeyToRaw<T> = T extends `${Opt<'"'>}${infer Key}${Opt<'"'>}` ? Key : T;
 
 type RawKeyOf<Table extends Tables> = keyof Database[Table];
-type BasicKeyOf<Table extends Tables> = keyof { [K in keyof Database[Table] as RawKeyToBasic<K>]: unknown };
-type ComplexKeyOf<Table extends Tables> = keyof { [K in keyof Database[Table] as RawKeyToComplex<K>]: unknown };
+type BasicKeyOf<Table extends Tables> = keyof { [K in RawKeyOf<Table> as RawKeyToBasic<K>]: unknown };
+type ComplexKeyOf<Table extends Tables> = keyof { [K in RawKeyOf<Table> as RawKeyToComplex<K>]: unknown };
 
 type FieldsOf<Table extends Tables, Keys extends readonly ComplexKeyOf<Table>[]> = 
     Keys['length'] extends 0 ? {} : { [K in Keys[0] as ComplexKeyToAlias<K>]: TryIndex<Database[Table], ComplexKeyToSimple<Keys[0]>> } & FieldsOf<Table, Tail<Keys>>;
