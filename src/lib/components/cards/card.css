@@ -18,17 +18,34 @@
   color: var(--background);
   padding: 0.5rem;
 }
-.cardLink {
+.cardSidebarLink {
   background-image: none;
   background-color: var(--secondary);
   border-radius: 0;
 }
-.cardLink:hover {
+.cardSidebarLink:hover {
   box-shadow: var(--color) 0px 0px 0.25rem 0.125rem;
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
+}
+.cardFancy {
+  background-image: linear-gradient(
+    -90deg,
+    var(--color) 0%,
+    var(--secondary) 45%,
+    var(--secondary) 100%
+  );
+  background-size: 200% 100%;
+  background-position: 0%;
+}
+.cardFancy:hover {
+  background-position: 50%;
+}
+.cardLink {
+  background-image: none;
+  background-color: var(--secondary);
 }
 .card:hover {
   opacity: 1;

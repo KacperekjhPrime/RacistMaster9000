@@ -3,6 +3,7 @@
   import type { PageProps } from "./$types";
   import NavigationSidebarLinkCard from "$lib/components/cards/NavigationSidebarLinkCard.svelte";
   import Sidebar from "$lib/components/navigation/Sidebar.svelte";
+  import LinkCard from "$lib/components/cards/LinkCard.svelte";
   import DummyThickData from "$lib/ts/dummyThickData/dummyThickData";
 
   let { data }: PageProps = $props();
@@ -52,26 +53,54 @@
     close={() => {}}
   ></NotificationCard>
 </div>
-
 <h2>Link cards</h2>
 <div class="cards">
-  <NavigationSidebarLinkCard color="success" contents="contents" link="/" icon="circle"
+  <LinkCard color="success" contents="content" icon="refresh" link="/Dashboard"
+  ></LinkCard>
+  <LinkCard color="info" contents="content" icon="refresh" link="/Dashboard"
+  ></LinkCard>
+  <LinkCard color="warning" contents="content" icon="refresh" link="/Dashboard"
+  ></LinkCard>
+  <LinkCard color="error" contents="content" icon="refresh" link="/Dashboard"
+  ></LinkCard>
+</div>
+<h2>Sidebar link cards</h2>
+<div class="cards">
+  <NavigationSidebarLinkCard
+    color="success"
+    contents="contents"
+    link="/"
+    icon="circle"
   ></NavigationSidebarLinkCard>
 
-  <NavigationSidebarLinkCard color="info" contents="contents" link="/" icon="close"></NavigationSidebarLinkCard>
-
-  <NavigationSidebarLinkCard color="warning" contents="contents" link="/" icon="more_horizontal"
+  <NavigationSidebarLinkCard
+    color="info"
+    contents="contents"
+    link="/"
+    icon="close"
   ></NavigationSidebarLinkCard>
 
-  <NavigationSidebarLinkCard color="error" contents="contents" link="/" icon="more_vertical"
+  <NavigationSidebarLinkCard
+    color="warning"
+    contents="contents"
+    link="/"
+    icon="more_horizontal"
+  ></NavigationSidebarLinkCard>
+
+  <NavigationSidebarLinkCard
+    color="error"
+    contents="contents"
+    link="/"
+    icon="more_vertical"
   ></NavigationSidebarLinkCard>
 </div>
-<h2>End of showcase</h2>
+<h2>Sidebar</h2>
 
 <Sidebar routes={DummyThickData.routes}></Sidebar>
 
 <style>
   .cards {
+  padding: 1rem;
     width: 100%;
     height: fit-content;
     display: grid;

@@ -18,7 +18,7 @@
   } = $props();
 </script>
 
-<a class={Colors[color].class + " card cardLink"} href={link}>
+<a class={Colors[color].class + " card cardSidebarLink"} href={link}>
   <div class="cardBody cardBodyReverse">
     <div class="cardIcon cardIconReverse">
       <Icon size="70%" {icon} fill={color}></Icon>
