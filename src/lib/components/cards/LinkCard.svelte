@@ -9,23 +9,24 @@
     title,
     contents,
     color,
+    href,
+    icon,
   }: {
     title: string;
     contents: string;
     color: keyof typeof Colors;
+    href: string;
+    icon: keyof typeof Icons;
   } = $props();
 </script>
 
-<div class={Colors[color].class + " card"}>
-  <div class="cardHeader">
-    <button><Icon size="100%" icon="close" fill="default"></Icon></button>
-  </div>
+<a class={Colors[color].class + " card"} {href}>
   <div class="cardBody">
     <div class="cardIcon">
-      <Icon size="70%" icon="star" fill={color}></Icon>
+      <Icon size="70%" {icon} fill={color}></Icon>
     </div>
     <div class="cardText cardTitle">
       {contents}
     </div>
   </div>
-</div>
+</a>

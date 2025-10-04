@@ -1,6 +1,4 @@
 <script lang="ts">
-  import Button from "$lib/components/Button.svelte";
-  import TournamentTable from "$lib/components/tables/TournamentTable.svelte";
   import NotificationCard from "$lib/components/cards/NotificationCard.svelte";
   import type { PageProps } from "./$types";
   import LinkCard from "$lib/components/cards/LinkCard.svelte";
@@ -54,11 +52,36 @@
 </div>
 
 <h2>Link cards</h2>
+<div class="cards">
+  <LinkCard
+    color="success"
+    contents="contents"
+    title="title"
+    href="/"
+    icon="circle"
+  ></LinkCard>
 
-<LinkCard color="info" contents="contents" title="title"></LinkCard>
+  <LinkCard color="info" contents="contents" title="title" href="/" icon="close"
+  ></LinkCard>
 
+  <LinkCard
+    color="warning"
+    contents="contents"
+    title="title"
+    href="/"
+    icon="more_horizontal"
+  ></LinkCard>
 
+  <LinkCard
+    color="error"
+    contents="contents"
+    title="title"
+    href="/"
+    icon="more_vertical"
+  ></LinkCard>
+</div>
 <h2>End of showcase</h2>
+
 <style>
   .cards {
     width: 100%;
