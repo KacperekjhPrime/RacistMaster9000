@@ -8,6 +8,8 @@
     
     let { data } = $props();
 
+    type Tournament = any;
+    type Ride = any;
     type RunState = "Not started" | "Started" | "In progress" | "Finished" | "Disqualified";
     let controllerData: ControllerData | null = $state(data);
     let runTime: number = $state(0);
@@ -17,7 +19,6 @@
     let totalLaps: number = $derived(controllerData.numberOfLaps);
     let lapsLeft: number = $state(0);
     let lockStatus: boolean = false;
-    let tournaments: Array<any> = $state([]);
     let selectedTournamentId: number | null = $state(null);
 
     function restartRun() {
@@ -57,6 +58,17 @@
         }
     }
 
+    let tournamentsRequest: Promise<Tournament[]> = $state(new Promise<Tournament[]>(() => {}));
+    let ridesRequest: Promise<Ride[]> = $derived(getRides(selectedTournamentId ?? 1));
+
+    async function getRides(id: number): Promise<Ride[]> {
+        const request = await fetch(resolve("/api/tournaments/[id]/rides", { id: id.toString() }))
+        const data = await request.json() as Ride[];
+        data.filter(r => r.RideEntryStateId == 1);
+        
+        return data;
+    }
+
     onMount(async () => {
         eventSource = new EventSource(controllerApi);
         eventSource.addEventListener("update", event => {
@@ -66,9 +78,7 @@
             errorStatus = atob(event.data);
         });
 
-        const request = await fetch(resolve("/api/tournaments"));
-        const response = await request.json() as Array<any>;
-        tournaments = response.filter(tournament => tournament.TournamentStateId == 2);
+        tournamentsRequest = fetch(resolve("/api/tournaments")).then(r => r.json());
     });
 </script>
 
@@ -79,11 +89,22 @@
     <h1>Strona główna</h1>
     <p>Wybierz wyścig:</p>
     <select bind:value={selectedTournamentId}>
-        {#each tournaments as tournament}
-        <option value={tournament.TournamentId}>{tournament.Name}</option>
-        {/each}
+        {#await tournamentsRequest then data} 
+            {#each data.filter(t => t.TournamentStateId == 2) as tournament}
+                <option value={tournament.TournamentId}>{tournament.Name}</option>
+            {/each}
+        {/await}
     </select>
     <p>Kolejka:</p>
+    {#await ridesRequest then data}
+        {#if data.length == 0}
+            <p>Brak przejazdów do wykonania</p>
+        {:else}
+            {#each data as ride}
+                <p>{ride.Entries[0].Name}</p>
+            {/each}
+        {/if}
+    {/await}
     <br><br>
     <h2>Status: {runState}</h2>
     <h3>Timer: {formatTime(runTime)}</h3>
