@@ -1,35 +1,55 @@
 <script lang="ts">
   import Icon from "./Icon.svelte";
+  import type { CardAction } from "./Card";
+  import Colors from "$lib/styles/colors";
+
+  let {
+    title,
+    contents,
+    buttonLeft,
+    buttonRight,
+    color,
+  }: {
+    title: string;
+    contents: string;
+    buttonLeft: CardAction;
+    buttonRight: CardAction;
+    color: keyof typeof Colors;
+  } = $props();
 </script>
 
-<div class="card">
+<div class={Colors[color].class + " card"}>
   <div class="cardHeader">
     <button><Icon size="100%" icon="close" fill="default"></Icon></button>
   </div>
   <div class="cardBody">
-    <h3 class="cardTitle">Title</h3>
-    <div class="cardIcon"><Icon size="70%" icon="star" fill="info"></Icon></div>
+    <h3 class="cardTitle">{title}</h3>
+    <div class="cardIcon">
+      <Icon size="70%" icon="star" fill={color}></Icon>
+    </div>
     <div class="cardText">
-      Your file is uploading right now. Just give us a second to finish your
-      upload.
+      {contents}
     </div>
     <div class="cardActions">
-      <div>s</div>
-      <div>b</div>
+      <button class="cardAction" onclick={buttonLeft.action}>
+        {buttonLeft.name}
+      </button>
+      <button class="cardAction" onclick={buttonRight.action}>
+        {buttonRight.name}
+      </button>
     </div>
   </div>
 </div>
 
 <style>
   .card {
-    aspect-ratio: 3/1;
-    width: 30rem;
-    height: fit-content;
+    aspect-ratio: 4/1;
+    width: 35rem;
     border-radius: var(--borderRadius);
     box-shadow: black 0px 0px 0.5rem 0.05rem;
     background: radial-gradient(
       ellipse at right top,
-      var(--info) 0%,
+      var(--color) 0%,
       var(--secondary) 45%,
       var(--secondary) 100%
     );
@@ -41,12 +61,23 @@
     color: var(--background);
     padding: 0.5rem;
   }
+  .card::before {
+    background: linear-gradient(
+        45deg,
+        var(--accent),
+        var(--accent),
+        var(--accent),
+        var(--accent),
+        var(--color)
+      )
+      border-box;
+  }
   .card:hover {
     opacity: 1;
   }
   .cardHeader {
     width: 100%;
-    height: 10%;
+    height: 15%;
     display: flex;
     justify-content: end;
   }
@@ -93,7 +124,18 @@
     display: flex;
     align-items: center;
     justify-content: space-evenly;
-    grid-column: 2;
+    grid-column: span 2;
     grid-row: 3;
+  }
+
+  .cardAction {
+    border-radius: var(--borderRadius);
+    width: 6rem;
+    height: 2.5rem;
+    background-color: var(--accent);
+    transition: background-color 0.25s ease-in;
+  }
+  .cardAction:hover {
+    background-color: var(--color);
   }
 </style>
