@@ -3,11 +3,12 @@
   --background: #f3f9fb;
   --primary: #00458f8f;
   --secondary: #151419;
-  --accent: #151419;
+  --accent: #222127;
   /* Notification colors */
   --info: var(--primary);
-  --success: #107667ed;
-  --error: #a63d2a82;
+  --success: #189D00;
+  --error: #ED0800;
+  --warning: #B6AA00;
 
   color: var(--text);
   --borderRadius: 0.5rem;
@@ -35,4 +36,22 @@ body {
   height: fit-content;
   margin: 0;
   padding: 0;
+}
+.inherit {
+  --color: inherit;
+}
+.info {
+  --color: var(--info);
+}
+.warning {
+  --color: var(--warning);
+}
+.error {
+  --color: var(--error);
+}
+.success {
+  --color: var(--success);
+}
+.default {
+  --color: white;
 }

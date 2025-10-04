@@ -8,7 +8,7 @@
 -->
 
 <script lang="ts">
-  import Colors from "$lib/components/theming/colors";
+  import Colors from "$lib/styles/colors";
   import Icons from "../theming/icons";
 
   let {
@@ -36,23 +36,5 @@
   svg,
   svg path {
     fill: var(--color);
-  }
-  .inherit {
-    --color: inherit;
-  }
-  .info {
-    --color: var(--info);
-  }
-  .warning {
-    --color: var(--warning);
-  }
-  .error {
-    --color: var(--error);
-  }
-  .success {
-    --color: var(--success);
-  }
-  .default {
-    --color: white;
   }
 </style>
