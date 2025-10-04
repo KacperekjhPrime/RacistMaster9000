@@ -14,26 +14,51 @@
     let runState: RunState = $state("Not started");
     let timer: number = 0;
     let errorStatus: string = $state("");
+    let totalLaps: number = $derived(controllerData.numberOfLaps);
+    let lapsLeft: number = $state(0);
+    let lockStatus: boolean = false;
 
-    $effect(() => {
-        if(controllerData?.hasStarted) {
-            runState = "Started";
-        }
-        else if(controllerData?.hasStarted && controllerData.startTripped) {
+    function restartRun() {
+        runTime = 0;
+        runState = "Not started";
+        lapsLeft = totalLaps;
+    }
+
+    function update(data: ControllerData) {
+        controllerData = data;
+        if(lockStatus) return;
+
+        if(data?.hasStarted && data.startTripped && runState == "Started") {
             runState = "In progress";
             timer = setInterval(() => runTime += 100);
         }
-        else if(runState == "In progress" && controllerData?.finishTripped) {
+        else if(data?.finishTripped && runState == "In progress") {
             runState = "Finished";
             clearInterval(timer);
-            runTime = controllerData.timeMs;
+            runTime = data.timeMs;
+            lockStatus = true;
+            return;
         }
-    });
+        else if(data?.lapTripped && runState == "In progress") {
+            lapsLeft -= 1;
+        }
+
+        if(runState == "In progress") return;
+
+        if(controllerData?.hasStarted) {
+            runState = "Started";
+            return;
+        }
+        else {
+            runState = "Not started";
+            return;
+        }
+    }
 
     onMount(async () => {
         eventSource = new EventSource(address);
         eventSource.addEventListener("update", event => {
-            controllerData = JSON.parse(atob(event.data)) as ControllerData;
+            update(JSON.parse(atob(event.data)) as ControllerData);
         });
         eventSource.addEventListener("connectionError", event => {
             errorStatus = atob(event.data);
@@ -47,6 +72,6 @@
 <h3>{JSON.stringify(controllerData)}</h3>
 <h1>Strona główna</h1>
 <h2>Status: {runState}</h2>
-<h3>Started: {controllerData?.hasStarted}</h3>
 <h3>Timer: {formatTime(runTime)}</h3>
+<h3>Okrążenia: {totalLaps - lapsLeft}/{totalLaps}</h3>
 {/if}
