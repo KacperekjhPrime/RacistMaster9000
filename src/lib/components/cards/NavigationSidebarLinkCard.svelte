@@ -7,14 +7,14 @@
 
   let {
     contents,
-    color,
+    color = "default",
     link,
-    icon,
+    icon = "check",
   }: {
     contents: string;
-    color: keyof typeof Colors;
+    color?: keyof typeof Colors;
     link: string;
-    icon: keyof typeof Icons;
+    icon?: keyof typeof Icons;
   } = $props();
 </script>
 

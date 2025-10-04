@@ -24,13 +24,14 @@
   background-image: none;
   background-color: var(--secondary);
   border-radius: 0;
+  border-bottom: solid var(--borderThickness) var(--secondary);
+  border-top: solid var(--borderThickness) var(--secondary);
 }
 .cardSidebarLink:hover {
-  box-shadow: var(--color) 0px 0px 0.25rem 0.125rem;
-  padding-top: 0.25rem;
-  padding-bottom: 0.25rem;
-  margin-top: 0.25rem;
-  margin-bottom: 0.25rem;
+  border-color: var(--color);
+}
+.cardSidebarLink:first-child {
+  border-top: none;
 }
 .cardFancy {
   background-image: linear-gradient(

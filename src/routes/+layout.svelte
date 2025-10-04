@@ -1,6 +1,7 @@
 <script lang="ts">
   import favicon from "$lib/assets/favicon.svg";
   import DummyThickData from "$lib/ts/dummyThickData/dummyThickData";
+  import Sidebar from "$lib/components/navigation/Sidebar.svelte";
   import "$lib/styles/global.css";
 
   let { children } = $props();
@@ -14,6 +15,7 @@
 <main>
   {@render children?.()}
 </main>
+<Sidebar routes={DummyThickData.routes}></Sidebar>
 
 <style>
   main {

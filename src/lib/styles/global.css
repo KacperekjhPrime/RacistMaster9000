@@ -11,9 +11,9 @@
   --warning: #b6aa00;
 
   --uiLayer: 555;
-  --transition:0.25s ease-in;
+  --transition: 0.25s ease-in;
 
-  color: var(--text);
+  color: var(--background);
   --borderRadius: 0.5rem;
   --borderThickness: 0.125rem;
   --letterSpacing: 0.2rem;
@@ -37,6 +37,7 @@ body {
   height: fit-content;
   margin: 0;
   padding: 0;
+  background-color: var(--accent);
 }
 .inherit {
   --color: inherit;
@@ -55,4 +56,13 @@ body {
 }
 .default {
   --color: white;
+}
+.primary {
+  --color: var(--primary);
+}
+.secondary {
+  --color: var(--secondary);
+}
+.accent {
+  --color: var(var(--accent));
 }

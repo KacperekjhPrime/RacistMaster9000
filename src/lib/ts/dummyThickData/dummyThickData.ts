@@ -28,6 +28,11 @@ const DummyThickData: SiteData = {
       link: "/Dashboard/Tournaments",
       icon: "check",
     },
+    {
+      title: "Test route",
+      link: "/frontendtestroute",
+      icon: "check",
+    },
   ],
   copyright: "© 2025 Copyright: Misex, sex i gosex",
 };

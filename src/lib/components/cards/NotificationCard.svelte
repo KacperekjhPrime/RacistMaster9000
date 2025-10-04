@@ -11,16 +11,16 @@
     contents,
     buttonLeft,
     buttonRight,
-    color,
-    icon,
+    color = "default",
+    icon = "check",
     close,
   }: {
     title: string;
     contents: string;
     buttonLeft: CardAction;
     buttonRight: CardAction;
-    color: keyof typeof Colors;
-    icon: keyof typeof Icons;
+    color?: keyof typeof Colors;
+    icon?: keyof typeof Icons;
     close: () => void;
   } = $props();
 </script>
@@ -41,12 +41,16 @@
     </div>
     <div class="cardActions">
       <div class="cardAction">
-        <Button color="inherit" onclick={buttonLeft.action}>
+        <Button
+          color="inherit"
+          onclick={buttonLeft.action}
+          defaultColor="accent"
+        >
           {buttonLeft.name}
         </Button>
       </div>
       <div class="cardAction">
-        <Button color="inherit" onclick={buttonRight.action}>
+        <Button color="inherit" onclick={buttonRight.action} defaultColor="accent">
           {buttonRight.name}
         </Button>
       </div>

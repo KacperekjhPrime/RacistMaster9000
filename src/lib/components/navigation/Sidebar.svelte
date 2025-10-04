@@ -18,11 +18,11 @@
 
 <style>
   nav {
-    width: 20rem;
-    height: 100vh;
-    position: relative;
+    position: fixed;
     top: 0;
     left: 0;
+    width: 20rem;
+    height: 100vh;
     translate: -15rem;
     display: flex;
     flex-direction: column;
@@ -33,6 +33,7 @@
     border-top-right-radius: var(--borderRadius);
     border-bottom-right-radius: var(--borderRadius);
     overflow: hidden;
+    gap: var(--borderThickness);
   }
   nav:hover {
     translate: 0%;
