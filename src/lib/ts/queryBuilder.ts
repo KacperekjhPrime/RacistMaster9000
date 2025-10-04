@@ -10,12 +10,15 @@ type Opt<T> = T | '';
 type ToString<T> = T extends Stringable ? T : '';
 type As = 'as' | 'AS' | 'As' | 'aS';
 type AsFull = ` ${As} ${string}`;
-type SimpleKeyToComplex<T> = `${ToString<T>}${Opt<AsFull>}`;
-type ComplexKeyToSimple<T extends string> = T extends `${infer Key}${AsFull}` ? Key : T;
+type RawKeyToComplex<T> = `${Opt<'"'>}${ToString<T>}${Opt<'"'>}${Opt<AsFull>}`;
+type RawKeyToBasic<T> = `${Opt<'"'>}${ToString<T>}${Opt<'"'>}`;
+type ComplexKeyToSimple<T extends string> = T extends `${Opt<'"'>}${infer Key}${Opt<'"'>}${AsFull}` ? Key : T;
 type ComplexKeyToAlias<T extends string> = T extends `${string} ${As} ${infer Alias}` ? Alias : T;
+type BasicKeyToRaw<T extends string> = T extends `${Opt<'"'>}${infer Key}${Opt<'"'>}` ? Key : T;
 
-type KeyOf<Table extends Tables> = keyof Database[Table];
-type ComplexKeyOf<Table extends Tables> = keyof { [K in keyof Database[Table] as SimpleKeyToComplex<K>]: unknown };
+type RawKeyOf<Table extends Tables> = keyof Database[Table];
+type BasicKeyOf<Table extends Tables> = keyof { [K in keyof Database[Table] as RawKeyToBasic<K>]: unknown };
+type ComplexKeyOf<Table extends Tables> = keyof { [K in keyof Database[Table] as RawKeyToComplex<K>]: unknown };
 
 type FieldsOf<Table extends Tables, Keys extends readonly ComplexKeyOf<Table>[]> = 
     Keys['length'] extends 0 ? {} : { [K in Keys[0] as ComplexKeyToAlias<K>]: TryIndex<Database[Table], ComplexKeyToSimple<Keys[0]>> } & FieldsOf<Table, Tail<Keys>>;
@@ -107,9 +110,9 @@ export function select<Table extends Tables, Keys extends ComplexKeyOf<Table>[]>
 
 class InsertQueryBuilder<Table extends Tables, Values extends any[]> {
     #table: string;
-    #keys: KeyOf<Table>[];
+    #keys: BasicKeyOf<Table>[];
 
-    constructor(table: Table, keys: KeyOf<Table>[]) {
+    constructor(table: Table, keys: BasicKeyOf<Table>[]) {
         this.#table = table;
         this.#keys = keys;
     }
@@ -132,9 +135,9 @@ class InsertQueryBuilder<Table extends Tables, Values extends any[]> {
     }
 }
 
-type KeysToColumnTypeTuple<Table extends Tables, Keys extends readonly KeyOf<Table>[]> =
-    Keys['length'] extends 0 ? [] : [Database[Table][Keys[0]], ...KeysToColumnTypeTuple<Table, Tail<Keys>>];
+type BasicKeysToColumnTypeTuple<Table extends Tables, Keys extends readonly BasicKeyOf<Table>[]> =
+    Keys['length'] extends 0 ? [] : [TryIndex<Database[Table], BasicKeyToRaw<Keys[0]>>, ...BasicKeysToColumnTypeTuple<Table, Tail<Keys>>];
 
-export function insert<Table extends Tables, Keys extends KeyOf<Table>[]>(table: Table, keys: Keys) {
-    return new InsertQueryBuilder<Table, KeysToColumnTypeTuple<Table, Keys>>(table, keys);
+export function insert<Table extends Tables, Keys extends BasicKeyOf<Table>[]>(table: Table, keys: Keys) {
+    return new InsertQueryBuilder<Table, BasicKeysToColumnTypeTuple<Table, Keys>>(table, keys);
 }
