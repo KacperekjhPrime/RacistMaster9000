@@ -12,15 +12,16 @@ const selectTournament = select('Tournaments', ['TournamentId'] as const)
     .where('Tournaments.TournamentId = ?')
     .prepare<[number]>();
 
-const selectQueueEntries = select('QueueEntries', ['QueueEntryId', 'RiderId', 'GokartId', '"Order"'] as const)
+const selectRideEntries = select('RideEntries', ['RideEntryId', 'RiderId', 'GokartId', '"Order"', 'RideEntryStateId'] as const)
+    .join('RideEntryStates', ['State'], 'RideEntryStateId')
     .join('Riders', ['RiderId', 'Name', 'Surname', 'SchoolId'] as const, 'RiderId')
     .join('Schools', ['Name AS SchoolName', 'Acronym AS SchoolAcronym', 'City'] as const, 'SchoolId')
     .join('Gokarts', ['Name AS GokartName'] as const, 'GokartId')
-    .where('QueueEntries.RideId = ?')
-    .orderBy('QueueEntries."Order"', true)
+    .where('RideEntries.RideId = ?')
+    .orderBy('RideEntries."Order"', true)
     .prepare<[number]>();
 
-const selectBasicQueueEntries = select('QueueEntries', ['RiderId', 'GokartId'] as const)
+const selectBasicRideEntries = select('RideEntries', ['RiderId', 'GokartId'] as const)
     .join('Rides', [], 'RideId')
     .where('Rides.TournamentId = ?')
     .prepare<[number]>();
@@ -35,7 +36,7 @@ const selectGokarts = select('Gokarts', ['GokartId'] as const)
 const insertRide = insert('Rides', ['RideStateId', 'TournamentId'] as const)
     .prepare();
 
-const insertQueueEntry = insert('QueueEntries', ['RideId', 'RiderId', 'GokartId', '"Order"'] as const)
+const insertRideEntry = insert('RideEntries', ['RideId', 'RiderId', 'GokartId', '"Order"', 'RideEntryStateId'] as const)
     .prepare();
 
 export function GET({ params }) {
@@ -45,7 +46,7 @@ export function GET({ params }) {
 
     return json(selectRides.all(id).map(ride => { return {
         ...ride,
-        Queue: selectQueueEntries.all(ride.RideId)
+        Entries: selectRideEntries.all(ride.RideId)
     } }));
 }
 
@@ -59,7 +60,7 @@ export function POST({ params }) {
 
     if (riderIds.length > gokartIds.length) throw new Error(`Tournament ${id} has more riders than there are gokarts available!`);
 
-    const tournamentQueueEntries = selectBasicQueueEntries.all(id);
+    const tournamentQueueEntries = selectBasicRideEntries.all(id);
 
     const validGokartsForRiders: Record<number, Set<number>> = {};
 
@@ -96,7 +97,7 @@ export function POST({ params }) {
         const { lastInsertRowid } = insertRide.run(1, id);
         for (let i = 0; i < selectedGokartsForRiders.length; i++) {
             const { riderId, gokartId } = selectedGokartsForRiders[i];
-            insertQueueEntry.run(lastInsertRowid as number, riderId, gokartId, i);
+            insertRideEntry.run(lastInsertRowid as number, riderId, gokartId, i, 1); // TODO: Move the 1 into a separate constant
         }
     })();
 
