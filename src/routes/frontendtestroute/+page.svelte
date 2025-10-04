@@ -1,7 +1,7 @@
 <script lang="ts">
   import NotificationCard from "$lib/components/cards/NotificationCard.svelte";
   import type { PageProps } from "./$types";
-  import LinkCard from "$lib/components/cards/LinkCard.svelte";
+  import NavigationSidebarLinkCard from "$lib/components/cards/NavigationSidebarLinkCard.svelte";
   import Sidebar from "$lib/components/navigation/Sidebar.svelte";
   import DummyThickData from "$lib/ts/dummyThickData/dummyThickData";
 
@@ -55,16 +55,16 @@
 
 <h2>Link cards</h2>
 <div class="cards">
-  <LinkCard color="success" contents="contents" link="/" icon="circle"
-  ></LinkCard>
+  <NavigationSidebarLinkCard color="success" contents="contents" link="/" icon="circle"
+  ></NavigationSidebarLinkCard>
 
-  <LinkCard color="info" contents="contents" link="/" icon="close"></LinkCard>
+  <NavigationSidebarLinkCard color="info" contents="contents" link="/" icon="close"></NavigationSidebarLinkCard>
 
-  <LinkCard color="warning" contents="contents" link="/" icon="more_horizontal"
-  ></LinkCard>
+  <NavigationSidebarLinkCard color="warning" contents="contents" link="/" icon="more_horizontal"
+  ></NavigationSidebarLinkCard>
 
-  <LinkCard color="error" contents="contents" link="/" icon="more_vertical"
-  ></LinkCard>
+  <NavigationSidebarLinkCard color="error" contents="contents" link="/" icon="more_vertical"
+  ></NavigationSidebarLinkCard>
 </div>
 <h2>End of showcase</h2>
 
