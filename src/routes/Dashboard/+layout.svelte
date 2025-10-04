@@ -1,7 +1,19 @@
 <script lang="ts">
-    import type { LayoutProps } from './$types';
+  import Sidebar from "$lib/components/navigation/Sidebar.svelte";
+  import DummyThickData from "$lib/ts/dummyThickData/dummyThickData";
+  import type { LayoutProps } from "./$types";
 
-    let { data, children }: LayoutProps = $props();
+  let { data, children }: LayoutProps = $props();
 </script>
 
-{@render children()}
+<main>
+  {@render children?.()}
+</main>
+<Sidebar routes={DummyThickData.routes}></Sidebar>
+
+<style>
+  main {
+    margin-left: 6rem;
+    width: calc(100% - 12rem);
+  }
+</style>

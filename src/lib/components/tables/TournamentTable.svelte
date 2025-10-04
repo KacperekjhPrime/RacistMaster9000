@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Tournament } from "$lib/ts/models/databaseModels";
 
-  import Cell from "$lib/components/Cell.svelte";
+  import Cell from "$lib/components/tables/Cell.svelte";
 
   // let { tournaments }: { tournaments: Array<Tournament> } = $props();
 </script>

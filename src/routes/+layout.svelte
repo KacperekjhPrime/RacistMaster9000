@@ -1,7 +1,6 @@
 <script lang="ts">
   import favicon from "$lib/assets/favicon.svg";
   import DummyThickData from "$lib/ts/dummyThickData/dummyThickData";
-  import Sidebar from "$lib/components/navigation/Sidebar.svelte";
   import "$lib/styles/global.css";
 
   let { children } = $props();
@@ -12,14 +11,4 @@
   <title>{DummyThickData.title}</title>
 </svelte:head>
 
-<main>
-  {@render children?.()}
-</main>
-<Sidebar routes={DummyThickData.routes}></Sidebar>
-
-<style>
-  main {
-    margin-left: 5.5rem;
-    width: calc(100% - 11rem);
-  }
-</style>
+{@render children()}
