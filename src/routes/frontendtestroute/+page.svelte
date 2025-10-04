@@ -6,8 +6,8 @@
   import LinkCard from "$lib/components/cards/LinkCard.svelte";
   import DummyThickData from "$lib/ts/dummyThickData/dummyThickData";
   import Button from "$lib/components/buttons/Button.svelte";
-  import Select from "$lib/components/Select/Select.svelte";
-  import Option from "$lib/components/Select/Option.svelte";
+  import Select from "$lib/components/select/Select.svelte";
+  import Option from "$lib/components/select/Option.svelte";
 
   let SelectedOption = $state(0);
 
