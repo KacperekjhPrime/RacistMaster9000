@@ -11,6 +11,7 @@
   --warning: #b6aa00;
 
   --uiLayer: 555;
+  --transition:0.25s ease-in;
 
   color: var(--text);
   --borderRadius: 0.5rem;
@@ -25,8 +26,6 @@ a {
 }
 
 button {
-  padding: 0;
-  margin: 0;
   border: none;
   outline: transparent;
   background-color: transparent;

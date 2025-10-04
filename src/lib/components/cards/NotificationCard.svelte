@@ -4,6 +4,7 @@
   import Colors from "$lib/styles/colors";
   import Icons from "$lib/components/icons/icons";
   import "./card.css";
+  import Button from "../buttons/Button.svelte";
 
   let {
     title,
@@ -39,12 +40,16 @@
       {contents}
     </div>
     <div class="cardActions">
-      <button class="cardAction" onclick={buttonLeft.action}>
-        {buttonLeft.name}
-      </button>
-      <button class="cardAction" onclick={buttonRight.action}>
-        {buttonRight.name}
-      </button>
+      <div class="cardAction">
+        <Button color="inherit" onclick={buttonLeft.action}>
+          {buttonLeft.name}
+        </Button>
+      </div>
+      <div class="cardAction">
+        <Button color="inherit" onclick={buttonRight.action}>
+          {buttonRight.name}
+        </Button>
+      </div>
     </div>
   </div>
 </div>

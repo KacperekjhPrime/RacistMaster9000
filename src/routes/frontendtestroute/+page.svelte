@@ -5,6 +5,7 @@
   import Sidebar from "$lib/components/navigation/Sidebar.svelte";
   import LinkCard from "$lib/components/cards/LinkCard.svelte";
   import DummyThickData from "$lib/ts/dummyThickData/dummyThickData";
+  import Button from "$lib/components/buttons/Button.svelte";
 
   let { data }: PageProps = $props();
 </script>
@@ -98,9 +99,25 @@
 
 <Sidebar routes={DummyThickData.routes}></Sidebar>
 
+<h2>Buttons</h2>
+<div class="display">
+  <div class="container">
+    <Button onclick={() => {}} color="success">Careless</Button>
+  </div>
+  <div class="container">
+    <Button onclick={() => {}} color="info">Pompeii</Button>
+  </div>
+  <div class="container">
+    <Button onclick={() => {}} color="warning">Best of me</Button>
+  </div>
+  <div class="container">
+    <Button onclick={() => {}} color="error">Rumors</Button>
+  </div>
+</div>
+
 <style>
   .cards {
-  padding: 1rem;
+    padding: 1rem;
     width: 100%;
     height: fit-content;
     display: grid;
@@ -110,6 +127,19 @@
     column-gap: 1rem;
     justify-content: center;
     align-items: center;
+  }
+  .display {
+    padding: 1rem;
+    width: 100%;
+    height: fit-content;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .container {
+    width: 20rem;
+    height: 2rem;
+    margin: 1rem;
   }
   h2 {
     padding-top: 2rem;

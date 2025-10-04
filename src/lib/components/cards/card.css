@@ -1,6 +1,8 @@
 .card {
   aspect-ratio: 4/1;
-  width: calc(100% - 1rem);
+  min-width: calc(100% - 1rem);
+  width: fit-content;
+  height: fit-content;
   border-radius: var(--borderRadius);
   box-shadow: var(--secondary) 0px 0px 0.5rem 0.05rem;
   background: radial-gradient(
@@ -10,7 +12,7 @@
     var(--secondary) 100%
   );
   opacity: 0.95;
-  transition: 0.25s ease-in;
+  transition: var(--transition);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -55,10 +57,6 @@
   height: 15%;
   display: flex;
   justify-content: end;
-}
-button {
-  height: 100%;
-  aspect-ratio: 1/1;
 }
 .cardBody {
   padding-top: 1rem;
@@ -115,12 +113,6 @@ button {
 }
 
 .cardAction {
-  border-radius: var(--borderRadius);
   width: 6rem;
   height: 2.5rem;
-  background-color: var(--accent);
-  transition: background-color 0.25s ease-in;
-}
-.cardAction:hover {
-  background-color: var(--color);
 }
