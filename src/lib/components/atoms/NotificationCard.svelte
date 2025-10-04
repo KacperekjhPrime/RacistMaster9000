@@ -2,6 +2,7 @@
   import Icon from "./Icon.svelte";
   import type { CardAction } from "./Card";
   import Colors from "$lib/styles/colors";
+  import Icons from "../theming/icons";
 
   let {
     title,
@@ -9,23 +10,29 @@
     buttonLeft,
     buttonRight,
     color,
+    icon,
+    close,
   }: {
     title: string;
     contents: string;
     buttonLeft: CardAction;
     buttonRight: CardAction;
     color: keyof typeof Colors;
+    icon: keyof typeof Icons;
+    close: () => void;
   } = $props();
 </script>
 
 <div class={Colors[color].class + " card"}>
   <div class="cardHeader">
-    <button><Icon size="100%" icon="close" fill="default"></Icon></button>
+    <button onclick={close}>
+      <Icon size="100%" icon="close" fill="default" />
+    </button>
   </div>
   <div class="cardBody">
     <h3 class="cardTitle">{title}</h3>
     <div class="cardIcon">
-      <Icon size="70%" icon="star" fill={color}></Icon>
+      <Icon size="70%" {icon} fill={color}></Icon>
     </div>
     <div class="cardText">
       {contents}
