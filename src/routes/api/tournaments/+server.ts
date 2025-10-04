@@ -4,11 +4,11 @@ import { makeArray, validateRequestJSON } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
 
 const selectAllTournaments = select('Tournaments', ['TournamentId', 'Name', 'StartTimestamp', 'EndTimestamp', 'TournamentStateId'])
-    .join('TournamentState', ['State'], 'TournamentStateId')
+    .join('TournamentStates', ['State'], 'TournamentStateId')
     .prepare();
 
-const selectTournamentState = select('TournamentState', ['TournamentStateId'])
-    .where('TournamentState.TournamentStateId = ?')
+const selectTournamentState = select('TournamentStates', ['TournamentStateId'])
+    .where('TournamentStates.TournamentStateId = ?')
     .prepare<[number]>();
 
 const selectRider = select('Riders', ['RiderId'])
