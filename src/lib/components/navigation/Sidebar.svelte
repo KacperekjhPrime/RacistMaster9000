@@ -1,5 +1,5 @@
 <script lang="ts">
-  import NavigationSIdebarLinkCard from "../cards/NavigationSidebarLinkCard.svelte";
+  import NavigationSidebarLinkCard from "../cards/NavigationSidebarLinkCard.svelte";
   import type { Route } from "$lib/ts/models/route";
 
   let { routes }: { routes: Array<Route> } = $props();
@@ -7,12 +7,12 @@
 
 <nav>
   {#each routes as route}
-    <NavigationSIdebarLinkCard
+    <NavigationSidebarLinkCard
       color="info"
       contents={route.title}
       link={route.link}
       icon={route.icon}
-    ></NavigationSIdebarLinkCard>
+    ></NavigationSidebarLinkCard>
   {/each}
 </nav>
 
