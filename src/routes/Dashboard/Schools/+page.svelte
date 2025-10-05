@@ -1,30 +1,14 @@
 <script lang="ts">
   import SchoolsTable from "$lib/components/tables/SchoolsTable.svelte";
   import type { School } from "$lib/ts/models/databaseModels";
+  import OmniAPI from "$lib/ts/OmniAPI/OmniAPI";
+  import { onMount } from "svelte";
 
-  let schools: Array<School> = [
-    {
-      Name: "Zespół Szkół Technicznych i Ogólnokształcących Imienia Jana Pawła II",
-      City: "Limanowa",
-      Acronym: "ZSTiO",
-    },{
-      Name: "Zespół Szkół Technicznych i Ogólnokształcących Imienia Jana Pawła II",
-      City: "Limanowa",
-      Acronym: "ZSTiO",
-    },{
-      Name: "Zespół Szkół Technicznych i Ogólnokształcących Imienia Jana Pawła II",
-      City: "Limanowa",
-      Acronym: "ZSTiO",
-    },{
-      Name: "Zespół Szkół Technicznych i Ogólnokształcących Imienia Jana Pawła II",
-      City: "Limanowa",
-      Acronym: "ZSTiO",
-    },{
-      Name: "Zespół Szkół Technicznych i Ogólnokształcących Imienia Jana Pawła II",
-      City: "Limanowa",
-      Acronym: "ZSTiO",
-    },
-  ];
+  let schools: Array<School> = $state([]);
+
+  onMount(() => {
+    schools = OmniAPI.getSchools();
+  });
 </script>
 
-<SchoolsTable bind:schools={schools}></SchoolsTable>
+<SchoolsTable bind:schools></SchoolsTable>

@@ -1,5 +1,5 @@
 .card {
-  aspect-ratio: 4/1;
+  aspect-ratio: 5/1;
   min-width: calc(100% - 1rem);
   width: fit-content;
   height: fit-content;
@@ -18,7 +18,7 @@
   align-items: center;
   justify-content: center;
   color: var(--text);
-  padding: 0.5rem;
+  /* padding: 0.5rem; */
 }
 .cardSidebarLink {
   background-image: none;

@@ -64,6 +64,3 @@ body {
 .secondary {
   --color: var(--secondary);
 }
-.accent {
-  --color: var(--accent);
-}
