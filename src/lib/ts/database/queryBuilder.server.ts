@@ -1,6 +1,6 @@
 import { db } from "./database.server";
 import type { Database } from "./databaseSchema.server";
-import type { Tail, TryIndex } from "../ts/helper";
+import type { Tail, TryIndex } from "../helper";
 
 export type Tables = keyof Database;
 

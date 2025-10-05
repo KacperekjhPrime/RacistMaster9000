@@ -1,4 +1,4 @@
-import { select } from "$lib/database/queryBuilder.server";
+import { select } from "$lib/ts/database/queryBuilder.server";
 import { validate, intParser } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
 

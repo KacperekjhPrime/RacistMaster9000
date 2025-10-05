@@ -1,5 +1,5 @@
 import type { Assert } from "$lib/ts/helper.js";
-import { select } from "$lib/database/queryBuilder.server";
+import { select } from "$lib/ts/database/queryBuilder.server";
 import { validate } from "$lib/ts/validation.server";
 import { intParser } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";

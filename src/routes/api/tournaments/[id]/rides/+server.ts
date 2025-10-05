@@ -1,6 +1,6 @@
-import { db } from "$lib/database/database.server.js";
+import { db } from "$lib/ts/database/database.server.js";
 import type { Assert } from "$lib/ts/helper.js";
-import { insert, select } from "$lib/database/queryBuilder.server";
+import { insert, select } from "$lib/ts/database/queryBuilder.server";
 import { intParser, validate } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
 
