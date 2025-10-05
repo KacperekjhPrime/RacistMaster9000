@@ -1,7 +1,7 @@
 import sqlite from "better-sqlite3";
 import envPaths from "env-paths";
 import { join } from "path";
-import { databaseSchema } from "$lib/ts/databaseSchema.server";
+import { databaseSchema } from "$lib/database/databaseSchema.server";
 
 const dbPath = join(envPaths('RacistMaster9000').data);
 
