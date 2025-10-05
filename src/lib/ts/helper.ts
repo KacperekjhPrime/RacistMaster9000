@@ -1,3 +1,5 @@
+import type { RouteId } from "$app/types";
+
 /**
  * Removes the first element of a tuple type.
  */
@@ -6,9 +8,6 @@ export type Tail<T extends readonly any[]> = T extends readonly [infer _, ...inf
 /**
  * Returns the last element of a tuple type.
  */
-import BSQL3 from "better-sqlite3"
-import { intParser, makeOptional, validateURLParams } from "./validation.server";
-import { error } from "@sveltejs/kit";
 
 export type Last<T extends readonly any[]> = T extends readonly [...infer _, infer Last] ? Last : never;
 
@@ -28,3 +27,9 @@ export type UnionToIntersection<U> =
  * Keep in mind that TypeScript's `boolean` technically is an intersection of `true` and `false`
  */
 export type IsUnion<T, IfTrue, IfFalse> = [T] extends [UnionToIntersection<T>] ? IfFalse : IfTrue;
+
+/**
+ * Asserts that type B extends from type A.
+ * Does not do anything other than making the TypeScript compiler emit an error.
+ */
+export type Assert<A, B extends A> = B;
