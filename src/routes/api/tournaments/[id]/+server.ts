@@ -3,6 +3,7 @@ import { select } from "$lib/database/queryBuilder.server";
 import { validate } from "$lib/ts/validation.server";
 import { intParser } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
+import { RideEntryState } from "$lib/database/databaseSchema.server.js";
 
 const selectOneTournament = select('Tournaments', ['TournamentId AS tournamentId', 'Name AS name', 'StartTimestamp AS startTimestamp', 'EndTimestamp AS endTimestamp', 'TournamentStateId AS tournamentStateId'] as const)
     .join('TournamentStates', ['State AS state'] as const, 'TournamentStateId')
@@ -18,6 +19,16 @@ const selectRides = select('Rides', ['RideId AS rideId', 'RideStateId AS rideSta
     .join('RideStates', ['State AS state'] as const, 'RideStateId')
     .where('Rides.TournamentId = ?')
     .prepare<[number]>();
+
+const selectLeaderboard = select('RideEntries', ['MIN(TimeMilliseconds) AS bestTime', 'RiderId AS riderId'] as const)
+    .join('Rides', [] as const, 'RideId')
+    .join('Riders', ['Name AS riderName', 'Surname AS riderSurname', 'SchoolId AS schoolId'] as const, 'RiderId')
+    .join('Schools', ['Acronym AS schoolNameAcronym'] as const, 'SchoolId')
+    .groupBy('RiderId')
+    .where(`RideEntries.RideEntryStateId = ${RideEntryState.Finished}`)
+    .where(`Rides.TournamentId = ?`)
+    .orderBy('bestTime', true)
+    .prepare<[tournamentId: number]>()
 
 export type GETResponse = {
     tournamentId: number,
@@ -35,6 +46,14 @@ export type GETResponse = {
         rideId: number,
         rideStateId: number
         state: string
+    }[],
+    leaderboard: {
+        riderId: number,
+        riderName: string,
+        riderSurname: string,
+        schoolId: number,
+        schoolNameAcronym: string,
+        bestTime: number
     }[]
 }
 
@@ -47,7 +66,8 @@ export function GET({ params }) {
     const result = {
         ...tournament,
         riders: selectTournamentRiders.all(id),
-        rides: selectRides.all(id)
+        rides: selectRides.all(id),
+        leaderboard: selectLeaderboard.all(id)
     };
 
     type _ = Assert<GETResponse, typeof result>;
