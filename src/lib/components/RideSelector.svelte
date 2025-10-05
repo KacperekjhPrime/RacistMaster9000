@@ -12,7 +12,7 @@
 <select bind:value={selectedRideId}>
     {#await ridesRequest then data}
         {#each data as ride, index}
-            <option value="{ride.RideId}">Przejazd {index + 1}</option>
+            <option value="{ride.rideId}">Przejazd {index + 1}</option>
         {/each}
     {/await}
 </select>

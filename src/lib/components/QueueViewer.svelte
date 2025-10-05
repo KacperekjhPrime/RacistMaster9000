@@ -1,20 +1,20 @@
 <script lang="ts">
-    type Ride = any;
+    import type { GETResponse as Ride } from "../../routes/api/tournaments/[id]/rides/+server";
 
     interface Props {
-        selectedRideId: number;
-        ridesRequest: Promise<Ride[]>;
+        selectedRideId: number | null;
+        ridesRequest: Promise<Ride>;
     }
 
-    let { selectedRideId, ridesRequest } = $props();
+    let { selectedRideId, ridesRequest }: Props = $props();
 </script>
 
 {#await ridesRequest then data}
     {#if selectedRideId == null}
         <p>Brak przejazdów do wykonania</p>
     {:else}
-        {#each data.filter(t => t.RideId == selectedRideId)[0].Entries as ride}
-            <p>{ride.Name} {ride.Surname} {ride.SchoolAcronym} - {ride.GokartName}</p>
+        {#each data.filter(r => r.rideId == selectedRideId)[0].entries as ride}
+            <p>{ride.riderName} {ride.riderSurname} {ride.schoolNameAcronym} - {ride.gokartName}</p>
         {/each}
     {/if}
 {/await}
