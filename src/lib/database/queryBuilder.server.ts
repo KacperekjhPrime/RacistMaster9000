@@ -13,7 +13,7 @@ type AsFull = ` ${As} ${string}`;
 type RawKeyToComplex<T> = `${ToString<T> | `"${ToString<T>}"` | `${keyof DatabaseFunctions}(${string})`}${Opt<AsFull>}`
 type RawKeyToBasic<T> = ToString<T> | `"${ToString<T>}"`;
 type ComplexKeyToRaw<T> = T extends `${Opt<'"'>}${infer Key}${Opt<'"'>}${AsFull}` ? Key : T;
-type ComplexKeyToAlias<T> = T extends `${string} ${As} ${infer Alias}` ? Alias : T;
+type ComplexKeyToAlias<T> = T extends `${string} ${As} ${infer Alias | `"${infer Alias}"`}` ? Alias : T;
 type BasicKeyToRaw<T> = T extends `${Opt<'"'>}${infer Key}${Opt<'"'>}` ? Key : T;
 
 type RawKeyOf<Table extends Tables> = keyof Database[Table];
