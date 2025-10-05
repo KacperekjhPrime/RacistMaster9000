@@ -2,10 +2,13 @@
   padding: 0.5rem;
   padding-left: 1rem;
   padding-right: 1rem;
-  width: 100%;
+  width: fit-content;
   height: fit-content;
   min-height: 2.5rem;
-  min-width: 6rem;
+  min-width: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   border-radius: var(--borderRadius);
   color: inherit;
@@ -22,4 +25,8 @@
 
 .buttonAccent {
   background-color: var(--accent);
+}
+
+.buttontransparent {
+  background-color: transparent;
 }
