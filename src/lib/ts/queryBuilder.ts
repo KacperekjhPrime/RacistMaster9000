@@ -79,6 +79,7 @@ class SelectQueryBuilder<T, Fields> {
      * @returns Statement string
      */
     toString() {
+        if (this.#keys.length === 0) throw new Error(`Cannot create a SELECT statement with no columns.`);
         let statement = `SELECT ${this.#keys.join(', ')} FROM ${this.#from}`;
         for (const { table, using } of this.#joins) {
             statement += ` JOIN ${table} USING (${using})`;
@@ -198,5 +199,6 @@ class UpdateQueryBuilder<Table extends Tables, Values extends any[]> {
  * @returns An instance of UpdateQueryBuilder
  */ 
 export function update<Table extends Tables, Keys extends BasicKeyOf<Table>[]>(table: Table, keys: Keys) {
+    if (keys.length === 0) throw new Error('Cannot created UpdateQueryBuilder with no columns to update.');
     return new UpdateQueryBuilder<Table, BasicKeysToColumnTypeTuple<Table, Keys>>(table, keys);
 }
