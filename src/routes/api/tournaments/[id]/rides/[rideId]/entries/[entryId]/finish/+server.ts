@@ -1,5 +1,5 @@
 import { db } from "$lib/database/database.server.js";
-import { RideEntryState } from "$lib/database/databaseSchema.server.js";
+import { RideEntryState, RideState } from "$lib/database/databaseSchema.server.js";
 import { select, update } from "$lib/database/queryBuilder.server";
 import { intParser, validate, validateRequestJSON } from "$lib/ts/validation.server.js";
 import { error } from "@sveltejs/kit";
@@ -37,7 +37,7 @@ export async function POST({ params, request }) {
     db.transaction(() => {
         updateRideEntry.run(time, RideEntryState.Finished, rideEntryId)
         if (selectNotFinishedRideEntries.all().length === 0) {
-            updateRide.run(RideEntryState.Finished, rideId);
+            updateRide.run(RideState.Finished, rideId);
         }
     })();
 
