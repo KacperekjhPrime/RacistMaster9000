@@ -1,5 +1,5 @@
 import { getAndValidateEntryIDs, tryFinishRide } from "../../entriesShared.server";
-import { select, update } from "$lib/database/queryBuilder.server";
+import { update } from "$lib/database/queryBuilder.server";
 import { db } from "$lib/database/database.server";
 import { RideEntryState } from "$lib/database/databaseSchema.server";
 

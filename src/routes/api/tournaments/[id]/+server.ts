@@ -1,6 +1,6 @@
 import type { Assert } from "$lib/ts/helper.js";
-import { select } from "$lib/database/queryBuilder.server";
-import { validate } from "$lib/ts/validation.server";
+import { select, update } from "$lib/database/queryBuilder.server";
+import { makeOptional, validate, validateRequestJSON } from "$lib/ts/validation.server";
 import { intParser } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
 import { RideEntryState } from "$lib/database/databaseSchema.server.js";
@@ -28,7 +28,7 @@ const selectLeaderboard = select('RideEntries', ['MIN(TimeMilliseconds) AS bestT
     .where(`RideEntries.RideEntryStateId = ${RideEntryState.Finished}`)
     .where(`Rides.TournamentId = ?`)
     .orderBy('bestTime', true)
-    .prepare<[tournamentId: number]>()
+    .prepare<[tournamentId: number]>();
 
 export type GETResponse = {
     tournamentId: number,
@@ -73,4 +73,30 @@ export function GET({ params }) {
     type _ = Assert<GETResponse, typeof result>;
 
     return json(result);
+}
+
+export async function PATCH({ params, request }) {
+    const id = validate(params.id, intParser, 'id');
+    const { name, startTimestamp, endTimestamp } = await validateRequestJSON(request, {
+        name: makeOptional('string'),
+        startTimestamp: makeOptional('number'),
+        endTimestamp: makeOptional('number'),
+    });
+
+    let builder = update('Tournaments', [] as const).where('Tournaments.TournamentId = ?');
+    if (name !== undefined) {
+        builder.addConstant('Name', name);
+    }
+    if (startTimestamp !== undefined) {
+        builder.addConstant('StartTimestamp', startTimestamp);
+    }
+    if (endTimestamp !== undefined) {
+        builder.addConstant('EndTimestamp', endTimestamp);
+    }
+    if (builder.affectedColumns === 0) error(400, 'At least one value to modify has to be specified.');
+
+    const affectedRows = builder.prepareConstant<[id: number]>(id).run().changes;
+    if (affectedRows === 0) error(404, `Tournament ${id} does not exist.`);
+
+    return new Response();
 }

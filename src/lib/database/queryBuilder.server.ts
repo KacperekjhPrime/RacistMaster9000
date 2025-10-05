@@ -1,3 +1,4 @@
+import BSQL3 from 'better-sqlite3';
 import { db } from "./database.server";
 import type { Database } from "./databaseSchema.server";
 import type { Tail, ToString, TryIndex } from "../ts/helper";
@@ -176,14 +177,35 @@ export function insert<Table extends Tables, Keys extends BasicKeyOf<Table>[]>(t
     return new InsertQueryBuilder<Table, BasicKeysToColumnTypeTuple<Table, Keys>>(table, keys);
 }
 
-class UpdateQueryBuilder<Table extends Tables, Values extends any[]> {
+class UpdateQueryBuilder<Table extends Tables, Values extends any[], ToBind extends any[] = []> {
     #table: string;
     #keys: BasicKeyOf<Table>[];
+    #values = new Array<any>();
     #where = '';
 
     constructor(table: Table, keys: BasicKeyOf<Table>[]) {
         this.#table = table;
         this.#keys = keys;
+    }
+
+    /**
+     * Adds a constant value to update a given column to. Using this function will make it a requirement to pass all values to all previous columns
+     * during prepare()
+     * @param key Column to update
+     * @param value Value to set
+     * @returns this
+     */
+    addConstant<Key extends BasicKeyOf<Table>>(key: Key, value: TryIndex<Database[Table], BasicKeyToRaw<Key>>) {
+        this.#keys.unshift(key);
+        this.#values.push(value);
+        return this as unknown as UpdateQueryBuilder<Table, Values, Values>;
+    }
+
+    /**
+     * Amount of columns that will be modified by this statement
+     */
+    get affectedColumns(): number {
+        return this.#keys.length;
     }
 
     /**
@@ -210,11 +232,24 @@ class UpdateQueryBuilder<Table extends Tables, Values extends any[]> {
     }
 
     /**
-     * Prepares an SQL statement
+     * Prepares an SQL statement. Use `prepareConstant()` if `addConstant()` has been used prior to this function.
      * @returns Prepared statement
      */
     prepare<T extends any[]>() {
+        if (this.#values.length > 0) throw new Error('prepare() cannot be used with constant values. Use prepareConstant() instead.');
         const statement = db.prepare<[...Values, ...T]>(this.toString());
+        return statement;
+    }
+
+    /**
+     * Prepares an SQL statement with constant values.
+     * @param values Values to bind to the statement
+     * @returns Prepared statement
+     */
+    prepareConstant<T extends any[]>(...values: [...Values, ...T]) {
+        if (this.#values.length === 0) throw new Error('prepare() cannot be used with constant values. Use prepareConstant() instead.');
+        const statement = db.prepare(this.toString());
+        statement.bind(...this.#values, ...values);
         return statement;
     }
 }
@@ -226,6 +261,5 @@ class UpdateQueryBuilder<Table extends Tables, Values extends any[]> {
  * @returns An instance of UpdateQueryBuilder
  */ 
 export function update<Table extends Tables, Keys extends BasicKeyOf<Table>[]>(table: Table, keys: Keys) {
-    if (keys.length === 0) throw new Error('Cannot created UpdateQueryBuilder with no columns to update.');
     return new UpdateQueryBuilder<Table, BasicKeysToColumnTypeTuple<Table, Keys>>(table, keys);
 }
