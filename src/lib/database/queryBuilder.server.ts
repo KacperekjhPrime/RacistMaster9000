@@ -30,15 +30,19 @@ type FieldsOf<Table extends Tables, Keys extends readonly ComplexKeyOf<Table>[]>
     
 class SelectQueryBuilder<T, Fields> {
     #from: string;
-    #keys: string[];
+    #keys = new Array<string>();
     #joins: { table: string, using: string }[] = []
     #where = '';
     #groupBy = '';
     #orderBy = '';
 
+    #addKeys(table: string, keys: string[]) {
+        this.#keys.push(...keys.map(k => k.includes('(') ? k : `${table}.${k}`));
+    }
+
     constructor(from: string, keys: string[]) {
         this.#from = from;
-        this.#keys = keys.map(k => `${from}.${k}`);
+        this.#addKeys(from, keys);
     }
 
     /**
@@ -49,7 +53,7 @@ class SelectQueryBuilder<T, Fields> {
      * @returns this
      */
     join<Table extends Tables, Keys extends ComplexKeyOf<Table>[], Using extends keyof Database[Table] & keyof T>(table: Table, keys: Keys, using: Using) {
-        this.#keys.push(...keys.map(k => `${table}.${k as string}`));
+        this.#addKeys(table, keys);
         this.#joins.push({ table, using: using as string });
         return this as SelectQueryBuilder<T & Database[Table], Fields & FieldsOf<Table, Keys>>;
     }
