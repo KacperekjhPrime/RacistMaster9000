@@ -7,7 +7,7 @@
 
 <script lang="ts">
   import { getContext, onMount } from "svelte";
-  import SelectController from "./SelectController";
+  import SelectController from "../select/SelectController";
 
   let { name, value = name }: { name: string; value?: string } = $props();
 
