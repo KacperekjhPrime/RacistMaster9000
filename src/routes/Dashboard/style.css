@@ -32,3 +32,7 @@ button:disabled {
 .disqualify-button {
     background-color: lightcoral;
 }
+
+.cancel-button {
+    color: white;
+}

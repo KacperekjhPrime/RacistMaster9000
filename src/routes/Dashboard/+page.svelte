@@ -9,7 +9,6 @@
     import type { GETResponse as Ride } from "../api/tournaments/[id]/rides/+server";
     import "./style.css";
     import { RideEntryState, RideEntryStatesReadable } from "$lib/ts/database/databaseStates";
-    import { time } from "console";
 
     const controllerApi = resolve("/api/controllerEvents");
     let eventSource: EventSource | null = null;
@@ -33,6 +32,8 @@
         runTime = 0;
         runState = RideEntryState.NotStarted;
         lapsLeft = totalLaps;
+        canSave = false;
+        lockStatus = false;
     }
 
     function disqualify() {
@@ -100,7 +101,7 @@
 
             if(timePenalty != 0) {
                 const request = await fetch(resolve("/api/tournaments/[id]/rides/[rideId]/entries/[entryId]", { id: selectedTournamentId!.toString(), rideId: selectedRideId!.toString(), entryId: currentRideEntryId!.toString() }), {
-                    method: "PATCH",
+                    method: "POST",
                     body: JSON.stringify({ penaltyMilliseconds: timePenalty * 1000 })
                 });
             }
@@ -146,5 +147,6 @@
     <div class="button-container">
         <button onclick={finishRideEntry} disabled={!canSave} class="save-button">Zapisz</button>
         <button onclick={disqualify} class="disqualify-button">Dyskwalifikacja</button>
+        <button onclick={restartRun} class="cancel-button">Wyczyść</button>
     </div>
 {/if}
