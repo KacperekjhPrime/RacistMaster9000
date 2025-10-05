@@ -1,0 +1,68 @@
+:root {
+  --text: #081317;
+  --background: #f3f9fb;
+  --primary: #00458f8f;
+  --secondary: #151419;
+  --accent: #222127;
+  /* Notification colors */
+  --info: var(--primary);
+  --success: #189d00;
+  --error: #ed0800;
+  --warning: #b6aa00;
+
+  --uiLayer: 555;
+  --transition: 0.25s ease-in;
+
+  color: var(--background);
+  --borderRadius: 0.5rem;
+  --borderThickness: 0.125rem;
+  --letterSpacing: 0.2rem;
+  font-size: 16px;
+  font-family: sans-serif;
+}
+
+a {
+  text-decoration: none;
+}
+
+button {
+  border: none;
+  outline: transparent;
+  background-color: transparent;
+  cursor: pointer;
+  color: inherit;
+}
+
+body {
+  height: fit-content;
+  margin: 0;
+  padding: 0;
+  background-color: var(--accent);
+}
+.inherit {
+  --color: inherit;
+}
+.info {
+  --color: var(--info);
+}
+.warning {
+  --color: var(--warning);
+}
+.error {
+  --color: var(--error);
+}
+.success {
+  --color: var(--success);
+}
+.default {
+  --color: white;
+}
+.primary {
+  --color: var(--primary);
+}
+.secondary {
+  --color: var(--secondary);
+}
+.accent {
+  --color: var(var(--accent));
+}

@@ -1,0 +1,25 @@
+.button {
+  padding: 0.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  width: 100%;
+  height: fit-content;
+  min-height: 2.5rem;
+  min-width: 6rem;
+
+  border-radius: var(--borderRadius);
+  color: var(--background);
+  transition: var(--transition);
+}
+
+.button:hover {
+  background-color: var(--color);
+}
+
+.buttonSecondary {
+  background-color: var(--secondary);
+}
+
+.buttonAccent {
+  background-color: var(--accent);
+}
