@@ -1,18 +1,18 @@
 import { db } from "./database.server";
 import type { Database } from "./databaseSchema.server";
-import type { Tail, TryIndex } from "../ts/helper";
+import type { Tail, ToString, TryIndex } from "../ts/helper";
+import type { DatabaseFunctions } from "./builtinDatabaseFunction.server";
 
 export type Tables = keyof Database;
 
 // Key manipulation types
-type Stringable = string | number | boolean | bigint | null;
+
 type Opt<T> = T | '';
-type ToString<T> = T extends Stringable ? T : '';
 type As = 'as' | 'AS' | 'As' | 'aS';
 type AsFull = ` ${As} ${string}`;
-type RawKeyToComplex<T> = `${ToString<T>}${Opt<AsFull>}` | `"${ToString<T>}"${Opt<AsFull>}`;
+type RawKeyToComplex<T> = `${ToString<T> | `"${ToString<T>}"` | `${keyof DatabaseFunctions}(${string})`}${Opt<AsFull>}`
 type RawKeyToBasic<T> = ToString<T> | `"${ToString<T>}"`;
-type ComplexKeyToSimple<T> = T extends `${Opt<'"'>}${infer Key}${Opt<'"'>}${AsFull}` ? Key : T;
+type ComplexKeyToRaw<T> = T extends `${Opt<'"'>}${infer Key}${Opt<'"'>}${AsFull}` ? Key : T;
 type ComplexKeyToAlias<T> = T extends `${string} ${As} ${infer Alias}` ? Alias : T;
 type BasicKeyToRaw<T> = T extends `${Opt<'"'>}${infer Key}${Opt<'"'>}` ? Key : T;
 
@@ -20,8 +20,12 @@ type RawKeyOf<Table extends Tables> = keyof Database[Table];
 export type BasicKeyOf<Table extends Tables> = keyof { [K in RawKeyOf<Table> as RawKeyToBasic<K>]: unknown };
 export type ComplexKeyOf<Table extends Tables> = keyof { [K in RawKeyOf<Table> as RawKeyToComplex<K>]: unknown };
 
+type ComplexKeyToType<Table extends Tables, Key extends ComplexKeyOf<Table>> = Key extends `${infer Fn}(${string})${Opt<AsFull>}`
+    ? TryIndex<DatabaseFunctions, Fn, unknown>
+    : TryIndex<Database[Table], ComplexKeyToRaw<Key>>;
+
 type FieldsOf<Table extends Tables, Keys extends readonly ComplexKeyOf<Table>[]> = 
-    Keys['length'] extends 0 ? {} : { [K in Keys[0] as ComplexKeyToAlias<K>]: TryIndex<Database[Table], ComplexKeyToSimple<Keys[0]>> } & FieldsOf<Table, Tail<Keys>>;
+    Keys['length'] extends 0 ? {} : { [K in Keys[0] as ComplexKeyToAlias<K>]: ComplexKeyToType<Table, Keys[0]> } & FieldsOf<Table, Tail<Keys>>;
 
     
 class SelectQueryBuilder<T, Fields> {
