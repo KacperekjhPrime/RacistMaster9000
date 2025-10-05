@@ -15,24 +15,24 @@
   };
 
   let {
-    onclick,
+    link,
     children,
     color = "default",
     defaultColor = "secondary",
   }: {
-    onclick: () => void;
+    link: string;
     children: () => any;
     color?: keyof typeof Colors;
     defaultColor?: keyof typeof DefaultColors;
   } = $props();
 </script>
 
-<button
-  {onclick}
+<a
+  href={link}
   class={Colors[color].class +
     " " +
     DefaultColors[defaultColor].class +
     " button"}
 >
   {@render children()}
-</button>
+</a>
