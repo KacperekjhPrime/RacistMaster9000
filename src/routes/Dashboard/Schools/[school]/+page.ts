@@ -1,7 +1,8 @@
 import type { PageLoad } from "./$types";
+import OmniAPI from "$lib/ts/OmniAPI/OmniAPI";
 
 export const load = (async ({ params }) => {
   return {
-    data: params.school,
+    school: OmniAPI.getSchool(params.school),
   };
 }) satisfies PageLoad;

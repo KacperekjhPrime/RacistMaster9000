@@ -2,11 +2,11 @@
   import type { School } from "$lib/ts/models/databaseModels";
   import { flip } from "svelte/animate";
   import Icon from "../icons/Icon.svelte";
-  import LinkCard from "../cards/LinkCard.svelte";
   import "./tables.css";
   import LinkButton from "../buttons/LinkButton.svelte";
 
   import { page } from "$app/stores";
+  import { slide } from "svelte/transition";
 
   let { schools = $bindable([]) }: { schools: Array<School> } = $props();
 </script>
@@ -18,7 +18,7 @@
     <div class="cell">Akronim</div>
   </div>
   {#each schools as school, index (school)}
-    <div class="row" animate:flip>
+    <div class="row" animate:flip transition:slide>
       <span class="cell">{school.Name}</span>
       <span class="cell">{school.City}</span>
       <span class="cell">{school.Acronym}</span>
@@ -39,8 +39,11 @@
       <!-- <Button onclick={addSchool} defaultColor="secondary" color="primary">
         Dodaj szkołe
       </Button> -->
-      <LinkCard icon="arrow_drop_down" color="primary" link="/" contents="uwuw"
-      ></LinkCard>
+      <!-- <LinkCard icon="arrow_drop_down" color="primary" link="/" contents="uwuw"
+      ></LinkCard> -->
+      <LinkButton color="primary" link={$page.url.pathname + "/AddSchool"}
+        >Dodaj Szkołę</LinkButton
+      >
     </div>
     <div class="cell"></div>
   </div>

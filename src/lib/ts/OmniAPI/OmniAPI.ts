@@ -32,6 +32,9 @@ const OmniAPI: Api = {
     ];
   },
   addSchool(school: School) {},
+  getSchool(acronym: string) {
+    return this.getSchools()[0];
+  },
 };
 
 export default OmniAPI;
