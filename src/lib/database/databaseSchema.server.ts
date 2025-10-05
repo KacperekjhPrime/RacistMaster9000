@@ -9,7 +9,7 @@ export type Database = {
 		RideId: number,
 		GokartId: number,
 		Order: number,
-		TimeMilliseconds: number
+		TimeMilliseconds: number | null
 		RideEntryStateId: number
 	},
 	RideEntryStates: {

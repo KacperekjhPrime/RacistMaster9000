@@ -1,14 +1,15 @@
-import { db } from "$lib/ts/database.server.js";
-import { insert, select } from "$lib/ts/queryBuilder";
+import { db } from "$lib/database/database.server.js";
+import type { Assert } from "$lib/ts/helper.js";
+import { insert, select } from "$lib/database/queryBuilder.server";
 import { makeArray, validateRequestJSON } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
 
-const selectAllTournaments = select('Tournaments', ['TournamentId', 'Name', 'StartTimestamp', 'EndTimestamp', 'TournamentStateId'])
-    .join('TournamentState', ['State'], 'TournamentStateId')
+const selectAllTournaments = select('Tournaments', ['TournamentId AS tournamentId', 'Name AS name', 'StartTimestamp AS startTimestamp', 'EndTimestamp AS endTimestamp', 'TournamentStateId AS tournamentStateId'] as const)
+    .join('TournamentStates', ['State AS state'], 'TournamentStateId')
     .prepare();
 
-const selectTournamentState = select('TournamentState', ['TournamentStateId'])
-    .where('TournamentState.TournamentStateId = ?')
+const selectTournamentState = select('TournamentStates', ['TournamentStateId'])
+    .where('TournamentStates.TournamentStateId = ?')
     .prepare<[number]>();
 
 const selectRider = select('Riders', ['RiderId'])
@@ -21,10 +22,24 @@ const insertTournament = insert('Tournaments', ['Name', 'StartTimestamp', 'EndTi
 const insertRiderTournament = insert('RiderTournaments', ['RiderId', 'TournamentId'] as const)
     .prepare();
 
+export type GETResponse = {
+    tournamentId: number,
+    name: string,
+    startTimestamp: number,
+    endTimestamp: number,
+    tournamentStateId: number,
+    state: string
+}[];
 
 export function GET(): Response {
-    return json(selectAllTournaments.all());
+    const result = selectAllTournaments.all();
+    type _ = Assert<GETResponse, typeof result>;
+    return json(result);
 }
+
+export type POSTResponse = {
+    id: number
+};
 
 export async function POST({ request }): Promise<Response> {
     const { name, startTimestamp, endTimestamp, stateId, riderIds } = await validateRequestJSON(request, {
@@ -42,13 +57,19 @@ export async function POST({ request }): Promise<Response> {
         if (selectRider.get(id) === undefined) error(404, `Rider ${id} does not exist.`);
     }
 
-    let tournamentId: number;
+    let id: number;
     db.transaction(() => {
-        tournamentId = Number(insertTournament.run(name, startTimestamp, endTimestamp, stateId).lastInsertRowid);
+        id = Number(insertTournament.run(name, startTimestamp, endTimestamp, stateId).lastInsertRowid);
         for (const id of riderIds) {
-            insertRiderTournament.run(id, tournamentId);
+            insertRiderTournament.run(id, id);
         }
     });
 
-    return json({ id: tournamentId! });
+    const result = {
+        id: id!
+    };
+
+    type _ = Assert<POSTResponse, typeof result>;
+
+    return json(result);
 }

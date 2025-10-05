@@ -1,10 +1,11 @@
-import { db } from "$lib/ts/database.server.js";
-import { insert, select } from "$lib/ts/queryBuilder";
+import { db } from "$lib/database/database.server.js";
+import type { Assert } from "$lib/ts/helper.js";
+import { insert, select } from "$lib/database/queryBuilder.server";
 import { intParser, validate } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
 
-const selectRides = select('Rides', ['RideId', 'RideStateId', 'TournamentId'] as const)
-    .join('RideStates', ['State'] as const, 'RideStateId')
+const selectRides = select('Rides', ['RideId AS rideId', 'RideStateId AS rideStateId', 'TournamentId AS tournamentId'] as const)
+    .join('RideStates', ['State AS state'] as const, 'RideStateId')
     .where('Rides.TournamentId = ?')
     .prepare<[number]>();
 
@@ -12,11 +13,11 @@ const selectTournament = select('Tournaments', ['TournamentId'] as const)
     .where('Tournaments.TournamentId = ?')
     .prepare<[number]>();
 
-const selectRideEntries = select('RideEntries', ['RideEntryId', 'RiderId', 'GokartId', '"Order"', 'RideEntryStateId'] as const)
-    .join('RideEntryStates', ['State'], 'RideEntryStateId')
-    .join('Riders', ['RiderId', 'Name', 'Surname', 'SchoolId'] as const, 'RiderId')
-    .join('Schools', ['Name AS SchoolName', 'Acronym AS SchoolAcronym', 'City'] as const, 'SchoolId')
-    .join('Gokarts', ['Name AS GokartName'] as const, 'GokartId')
+const selectRideEntries = select('RideEntries', ['RideEntryId AS rideEntryId', 'RiderId AS riderId', 'GokartId AS gokartId', '"Order" AS order', 'TimeMilliseconds AS timeMilliseconds', 'RideEntryStateId AS rideEntryStateId'] as const)
+    .join('RideEntryStates', ['State AS state'], 'RideEntryStateId')
+    .join('Riders', ['Name AS riderName', 'Surname AS riderSurname', 'SchoolId AS schoolId'] as const, 'RiderId')
+    .join('Schools', ['Name AS schoolName', 'Acronym AS schoolNameAcronym', 'City AS city'] as const, 'SchoolId')
+    .join('Gokarts', ['Name AS gokartName'] as const, 'GokartId')
     .where('RideEntries.RideId = ?')
     .orderBy('RideEntries."Order"', true)
     .prepare<[number]>();
@@ -39,15 +40,50 @@ const insertRide = insert('Rides', ['RideStateId', 'TournamentId'] as const)
 const insertRideEntry = insert('RideEntries', ['RideId', 'RiderId', 'GokartId', '"Order"', 'RideEntryStateId'] as const)
     .prepare();
 
+export type GETResponse = {
+    rideId: number,
+    rideStateId: number,
+    tournamentId: number,
+    state: string,
+    entries: {
+        rideEntryId: number,
+        riderId: number,
+        gokartId: number,
+        order: number,
+        timeMilliseconds: number | null,
+        rideEntryStateId: number,
+        riderName: string,
+        riderSurname: string,
+        schoolId: number,
+        schoolName: string,
+        schoolNameAcronym: string,
+        city: string,
+        gokartName: string
+    }[]
+}[]
+
 export function GET({ params }) {
     const id = validate(params.id, intParser, 'id');
     
     if (selectTournament.get(id) === undefined) error(404, 'Tournament does not exist.');
 
-    return json(selectRides.all(id).map(ride => { return {
+    const result = selectRides.all(id).map(ride => { return {
         ...ride,
-        Entries: selectRideEntries.all(ride.RideId)
-    } }));
+        entries: selectRideEntries.all(ride.rideId)
+    } });
+
+    type _ = Assert<GETResponse, typeof result>;
+
+    return json(result);
+}
+
+export type POSTResponse = {
+    rideId: number,
+    entries: {
+        riderId: number,
+        gokartId: number,
+        order: number
+    }[]
 }
 
 export function POST({ params }) {
@@ -93,13 +129,21 @@ export function POST({ params }) {
         selectedGokartsForRiders.splice(insertionIndex, 0, { riderId, gokartId })
     }
 
+    const entryIds = new Array<number>();
+    let rideId: number;
     db.transaction(() => {
-        const { lastInsertRowid } = insertRide.run(1, id);
+        const { lastInsertRowid: rideId } = insertRide.run(1, id);
         for (let i = 0; i < selectedGokartsForRiders.length; i++) {
             const { riderId, gokartId } = selectedGokartsForRiders[i];
-            insertRideEntry.run(lastInsertRowid as number, riderId, gokartId, i, 1); // TODO: Move the 1 into a separate constant
+            const { lastInsertRowid: entryId } = insertRideEntry.run(rideId as number, riderId, gokartId, i, 1); // TODO: Move the 1 into a separate constant
+            entryIds.push(entryId as number);
         }
     })();
 
-    return json(selectedGokartsForRiders);
+    const result = {
+        rideId: rideId!,
+        entries: selectedGokartsForRiders.map(({ riderId, gokartId }, i) => { return { entryId: entryIds[i], riderId, gokartId, order: i } })
+    };
+    type _ = Assert<POSTResponse, typeof result>;
+    return json(result);
 }

@@ -276,7 +276,7 @@ export function makeArray<T extends Validator>(validator: T): CustomValidator<To
  * @param requireInt Is the number required to be an integer
  * @returns Numeric validator
  */
-export function makeRange(min: number, max: number, requireInt: boolean): CustomValidator<number> {
+export function makeNumericValidator(min: number, max: number, requireInt: boolean): CustomValidator<number> {
     return {
         validate(value, context) {
             if (typeof value !== 'number') throwTypeError(context, this.typeName);
@@ -330,6 +330,10 @@ export const intParser: CustomValidator<number> = {
     typeName: 'int string'
 }
 
+/**
+ * Validator that only allows integers
+ */
+export const intValidator = makeNumericValidator(-Infinity, Infinity, true);
 
 /**
  * Validator that parses strings into floating point numbers.
@@ -342,4 +346,15 @@ export const floatParser: CustomValidator<number> = {
         return number;
     },
     typeName: 'float string'
+}
+
+/**
+ * Validator that only allows null values
+ */
+export const nullValidator: CustomValidator<null> = {
+    validate(value, context) {
+        if (value === null) return null;
+        throwTypeError(context, this.typeName);
+    },
+    typeName: 'null'
 }
