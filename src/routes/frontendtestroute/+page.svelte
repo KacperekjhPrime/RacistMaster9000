@@ -9,13 +9,10 @@
   import Select from "$lib/components/select/Select.svelte";
   import Option from "$lib/components/select/Option.svelte";
 
-  let SelectedOption = $state(0);
-
   let { data }: PageProps = $props();
 </script>
 
 <Sidebar routes={DummyThickData.routes}></Sidebar>
-
 <main>
   <h1>
     If you got here it's probably by accident. I test here components in
@@ -129,8 +126,7 @@
 
   <h2>Select</h2>
   <div class="display">
-    {SelectedOption}
-    <Select bind:selectedOption={SelectedOption}>
+    <Select>
       <Option name="love"></Option>
       <Option name="uwu"></Option>
       <Option name="Kacper"></Option>

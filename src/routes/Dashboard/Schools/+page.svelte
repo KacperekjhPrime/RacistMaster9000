@@ -27,4 +27,4 @@
   ];
 </script>
 
-<SchoolsTable {schools}></SchoolsTable>
+<SchoolsTable bind:schools={schools}></SchoolsTable>

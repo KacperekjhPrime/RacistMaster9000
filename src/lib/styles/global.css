@@ -1,6 +1,7 @@
 :root {
-  --text: #081317;
-  --background: #f3f9fb;
+  --text: #f3f9fb;
+  --header: #d9d9d9;
+  --background: #081317;
   --primary: #00458f8f;
   --secondary: #151419;
   --accent: #222127;
@@ -13,7 +14,7 @@
   --uiLayer: 555;
   --transition: 0.25s ease-in;
 
-  color: var(--background);
+  color: var(--text);
   --borderRadius: 0.5rem;
   --borderThickness: 0.125rem;
   --letterSpacing: 0.2rem;
@@ -64,5 +65,5 @@ body {
   --color: var(--secondary);
 }
 .accent {
-  --color: var(var(--accent));
+  --color: var(--accent);
 }
