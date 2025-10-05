@@ -134,10 +134,10 @@ export function POST({ params }) {
     const entryIds = new Array<number>();
     let rideId: number;
     db.transaction(() => {
-        const { lastInsertRowid: rideId } = insertRide.run(1, id);
+        rideId = Number(insertRide.run(1, id).lastInsertRowid);
         for (let i = 0; i < selectedGokartsForRiders.length; i++) {
             const { riderId, gokartId } = selectedGokartsForRiders[i];
-            const { lastInsertRowid: entryId } = insertRideEntry.run(rideId as number, riderId, gokartId, i, RideEntryState.NotStarted);
+            const { lastInsertRowid: entryId } = insertRideEntry.run(rideId, riderId, gokartId, i, RideEntryState.NotStarted);
             entryIds.push(entryId as number);
         }
     })();
