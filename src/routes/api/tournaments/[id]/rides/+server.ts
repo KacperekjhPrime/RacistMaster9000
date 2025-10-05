@@ -14,7 +14,7 @@ const selectTournament = select('Tournaments', ['TournamentId'] as const)
     .where('Tournaments.TournamentId = ?')
     .prepare<[number]>();
 
-const selectRideEntries = select('RideEntries', ['RideEntryId AS rideEntryId', 'RiderId AS riderId', 'GokartId AS gokartId', '"Order" AS order', 'TimeMilliseconds AS timeMilliseconds', 'RideEntryStateId AS rideEntryStateId'] as const)
+const selectRideEntries = select('RideEntries', ['RideEntryId AS rideEntryId', 'RiderId AS riderId', 'GokartId AS gokartId', '"Order" AS "order"', 'TimeMilliseconds AS timeMilliseconds', 'RideEntryStateId AS rideEntryStateId'] as const)
     .join('RideEntryStates', ['State AS state'], 'RideEntryStateId')
     .join('Riders', ['Name AS riderName', 'Surname AS riderSurname', 'SchoolId AS schoolId'] as const, 'RiderId')
     .join('Schools', ['Name AS schoolName', 'Acronym AS schoolNameAcronym', 'City AS city'] as const, 'SchoolId')
