@@ -3,6 +3,7 @@ import type { Assert } from "$lib/ts/helper.js";
 import { insert, select } from "$lib/database/queryBuilder.server";
 import { intParser, validate } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
+import { RideEntryState } from "$lib/database/databaseSchema.server.js";
 
 const selectRides = select('Rides', ['RideId AS rideId', 'RideStateId AS rideStateId', 'TournamentId AS tournamentId'] as const)
     .join('RideStates', ['State AS state'] as const, 'RideStateId')
@@ -135,7 +136,7 @@ export function POST({ params }) {
         const { lastInsertRowid: rideId } = insertRide.run(1, id);
         for (let i = 0; i < selectedGokartsForRiders.length; i++) {
             const { riderId, gokartId } = selectedGokartsForRiders[i];
-            const { lastInsertRowid: entryId } = insertRideEntry.run(rideId as number, riderId, gokartId, i, 1); // TODO: Move the 1 into a separate constant
+            const { lastInsertRowid: entryId } = insertRideEntry.run(rideId as number, riderId, gokartId, i, RideEntryState.NotStarted);
             entryIds.push(entryId as number);
         }
     })();

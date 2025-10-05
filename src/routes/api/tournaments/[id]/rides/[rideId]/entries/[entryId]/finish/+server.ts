@@ -1,11 +1,8 @@
 import { db } from "$lib/database/database.server.js";
+import { RideEntryState } from "$lib/database/databaseSchema.server.js";
 import { select, update } from "$lib/database/queryBuilder.server";
 import { intParser, validate, validateRequestJSON } from "$lib/ts/validation.server.js";
 import { error } from "@sveltejs/kit";
-
-const unfinishedRideEntryStateId = 1;
-const finishedRideEntryStateId = 2;
-const finishedRideStateId = 3;
 
 const updateRideEntry = update('RideEntries', ['TimeMilliseconds', 'RideEntryStateId'] as const)
     .where('RideEntries.RideEntryId = ?')
@@ -16,7 +13,7 @@ const updateRide = update('Rides', ['RideStateId'])
     .prepare<[number]>();
 
 const selectNotFinishedRideEntries = select('RideEntries', ['RideEntryId'] as const)
-    .where(`RideEntries.RideEntryStateId = ${unfinishedRideEntryStateId}`)
+    .where(`RideEntries.RideEntryStateId = ${RideEntryState.NotStarted}`)
     .prepare();
 
 const selectRideEntryFromTournament = select('RideEntries', ['RideEntryId'])
@@ -38,9 +35,9 @@ export async function POST({ params, request }) {
     });
 
     db.transaction(() => {
-        updateRideEntry.run(time, finishedRideEntryStateId, rideEntryId)
+        updateRideEntry.run(time, RideEntryState.Finished, rideEntryId)
         if (selectNotFinishedRideEntries.all().length === 0) {
-            updateRide.run(finishedRideStateId, rideId);
+            updateRide.run(RideEntryState.Finished, rideId);
         }
     })();
 

@@ -55,6 +55,24 @@ export type Database = {
 	}
 }
 
+export enum RideEntryState {
+	NotStarted = 1,
+	Finished,
+	Disqualified
+}
+
+export enum RideState {
+	NotStarted = 1,
+	InProgres,
+	Finished
+}
+
+export enum TournamentState {
+	NotStarted = 1,
+	InProgress,
+	Finished
+}
+
 export const databaseSchema =
 `BEGIN TRANSACTION;
 CREATE TABLE IF NOT EXISTS "Gokarts" (
