@@ -3,6 +3,7 @@ import type { Assert } from "$lib/ts/helper.js";
 import { insert, select } from "$lib/ts/database/queryBuilder.server";
 import { intParser, validate } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
+import { RideEntryState } from "$lib/ts/database/databaseSchema.server.js";
 
 const selectRides = select('Rides', ['RideId AS rideId', 'RideStateId AS rideStateId', 'TournamentId AS tournamentId'] as const)
     .join('RideStates', ['State AS state'] as const, 'RideStateId')
@@ -13,7 +14,7 @@ const selectTournament = select('Tournaments', ['TournamentId'] as const)
     .where('Tournaments.TournamentId = ?')
     .prepare<[number]>();
 
-const selectRideEntries = select('RideEntries', ['RideEntryId AS rideEntryId', 'RiderId AS riderId', 'GokartId AS gokartId', '"Order" AS order', 'TimeMilliseconds AS timeMilliseconds', 'RideEntryStateId AS rideEntryStateId'] as const)
+const selectRideEntries = select('RideEntries', ['RideEntryId AS rideEntryId', 'RiderId AS riderId', 'GokartId AS gokartId', '"Order" AS "order"', 'TimeMilliseconds AS timeMilliseconds', 'RideEntryStateId AS rideEntryStateId'] as const)
     .join('RideEntryStates', ['State AS state'], 'RideEntryStateId')
     .join('Riders', ['Name AS riderName', 'Surname AS riderSurname', 'SchoolId AS schoolId'] as const, 'RiderId')
     .join('Schools', ['Name AS schoolName', 'Acronym AS schoolNameAcronym', 'City AS city'] as const, 'SchoolId')
@@ -80,6 +81,7 @@ export function GET({ params }) {
 export type POSTResponse = {
     rideId: number,
     entries: {
+        entryId: number,
         riderId: number,
         gokartId: number,
         order: number
@@ -132,10 +134,10 @@ export function POST({ params }) {
     const entryIds = new Array<number>();
     let rideId: number;
     db.transaction(() => {
-        const { lastInsertRowid: rideId } = insertRide.run(1, id);
+        rideId = Number(insertRide.run(1, id).lastInsertRowid);
         for (let i = 0; i < selectedGokartsForRiders.length; i++) {
             const { riderId, gokartId } = selectedGokartsForRiders[i];
-            const { lastInsertRowid: entryId } = insertRideEntry.run(rideId as number, riderId, gokartId, i, 1); // TODO: Move the 1 into a separate constant
+            const { lastInsertRowid: entryId } = insertRideEntry.run(rideId, riderId, gokartId, i, RideEntryState.NotStarted);
             entryIds.push(entryId as number);
         }
     })();

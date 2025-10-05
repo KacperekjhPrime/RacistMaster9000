@@ -1,8 +1,9 @@
 import type { Assert } from "$lib/ts/helper.js";
-import { select } from "$lib/ts/database/queryBuilder.server";
-import { validate } from "$lib/ts/validation.server";
+import { select, update } from "$lib/ts/database/queryBuilder.server";
+import { makeOptional, validate, validateRequestJSON } from "$lib/ts/validation.server";
 import { intParser } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
+import { RideEntryState } from "$lib/ts/database/databaseSchema.server.js";
 
 const selectOneTournament = select('Tournaments', ['TournamentId AS tournamentId', 'Name AS name', 'StartTimestamp AS startTimestamp', 'EndTimestamp AS endTimestamp', 'TournamentStateId AS tournamentStateId'] as const)
     .join('TournamentStates', ['State AS state'] as const, 'TournamentStateId')
@@ -18,6 +19,16 @@ const selectRides = select('Rides', ['RideId AS rideId', 'RideStateId AS rideSta
     .join('RideStates', ['State AS state'] as const, 'RideStateId')
     .where('Rides.TournamentId = ?')
     .prepare<[number]>();
+
+const selectLeaderboard = select('RideEntries', ['MIN(TimeMilliseconds) AS bestTime', 'RiderId AS riderId'] as const)
+    .join('Rides', [] as const, 'RideId')
+    .join('Riders', ['Name AS riderName', 'Surname AS riderSurname', 'SchoolId AS schoolId'] as const, 'RiderId')
+    .join('Schools', ['Acronym AS schoolNameAcronym'] as const, 'SchoolId')
+    .groupBy('RiderId')
+    .where(`RideEntries.RideEntryStateId = ${RideEntryState.Finished}`)
+    .where(`Rides.TournamentId = ?`)
+    .orderBy('bestTime', true)
+    .prepare<[tournamentId: number]>();
 
 export type GETResponse = {
     tournamentId: number,
@@ -35,6 +46,14 @@ export type GETResponse = {
         rideId: number,
         rideStateId: number
         state: string
+    }[],
+    leaderboard: {
+        riderId: number,
+        riderName: string,
+        riderSurname: string,
+        schoolId: number,
+        schoolNameAcronym: string,
+        bestTime: number
     }[]
 }
 
@@ -47,10 +66,37 @@ export function GET({ params }) {
     const result = {
         ...tournament,
         riders: selectTournamentRiders.all(id),
-        rides: selectRides.all(id)
+        rides: selectRides.all(id),
+        leaderboard: selectLeaderboard.all(id)
     };
 
     type _ = Assert<GETResponse, typeof result>;
 
     return json(result);
+}
+
+export async function PATCH({ params, request }) {
+    const id = validate(params.id, intParser, 'id');
+    const { name, startTimestamp, endTimestamp } = await validateRequestJSON(request, {
+        name: makeOptional('string'),
+        startTimestamp: makeOptional('number'),
+        endTimestamp: makeOptional('number'),
+    });
+
+    let builder = update('Tournaments', [] as const).where('Tournaments.TournamentId = ?');
+    if (name !== undefined) {
+        builder.addConstant('Name', name);
+    }
+    if (startTimestamp !== undefined) {
+        builder.addConstant('StartTimestamp', startTimestamp);
+    }
+    if (endTimestamp !== undefined) {
+        builder.addConstant('EndTimestamp', endTimestamp);
+    }
+    if (builder.affectedColumns === 0) error(400, 'At least one value to modify has to be specified.');
+
+    const affectedRows = builder.prepareConstant<[id: number]>(id).run().changes;
+    if (affectedRows === 0) error(404, `Tournament ${id} does not exist.`);
+
+    return new Response();
 }

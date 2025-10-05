@@ -14,7 +14,7 @@ export type Last<T extends readonly any[]> = T extends readonly [...infer _, inf
 /**
  * Tries to index T using Key if possible, returns never if it's not possible.
  */
-export type TryIndex<T, Key> = Key extends keyof T ? T[Key] : never;
+export type TryIndex<T, Key, Fallback = never> = Key extends keyof T ? T[Key] : Fallback;
 
 /**
  * Converts an union type `(A | B)` into an intersection `(A & B)`
@@ -33,3 +33,13 @@ export type IsUnion<T, IfTrue, IfFalse> = [T] extends [UnionToIntersection<T>] ?
  * Does not do anything other than making the TypeScript compiler emit an error.
  */
 export type Assert<A, B extends A> = B;
+
+/**
+ * Union of types that can be properly converted to string
+ */
+export type Stringable = string | number | boolean | bigint | null;
+
+/**
+ * Converts all stringable types to string, and all non-stringable into empty strings.
+ */
+export type ToString<T> = T extends `${Stringable}` ? T : '';

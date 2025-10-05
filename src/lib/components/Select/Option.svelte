@@ -1,13 +1,13 @@
 <!--
   @component Option
-  ### Made to be used with 'Select' component
+  ### Made to be used with 'YourMom' component
   @param name - text to be displayed in 'Select'
   @param value(optional) - value to be set, for accessibility reasons
 -->
 
 <script lang="ts">
   import { getContext, onMount } from "svelte";
-  import SelectController from "../select/SelectController";
+  import SelectController from "../Select/SelectController";
 
   let { name, value = name }: { name: string; value?: string } = $props();
 
