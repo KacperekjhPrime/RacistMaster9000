@@ -20,7 +20,7 @@ const selectRides = select('Rides', ['RideId AS rideId', 'RideStateId AS rideSta
     .where('Rides.TournamentId = ?')
     .prepare<[number]>();
 
-const selectLeaderboard = select('RideEntries', ['MIN(TimeMilliseconds) AS bestTime', 'RiderId AS riderId'] as const)
+const selectLeaderboard = select('RideEntries', ['MIN(TimeMilliseconds + PenaltyMilliseconds) AS bestTime', 'RiderId AS riderId'] as const)
     .join('Rides', [] as const, 'RideId')
     .join('Riders', ['Name AS riderName', 'Surname AS riderSurname', 'SchoolId AS schoolId'] as const, 'RiderId')
     .join('Schools', ['Acronym AS schoolNameAcronym'] as const, 'SchoolId')

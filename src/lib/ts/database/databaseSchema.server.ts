@@ -9,8 +9,9 @@ export type Database = {
 		RideId: number,
 		GokartId: number,
 		Order: number,
-		TimeMilliseconds: number | null
-		RideEntryStateId: number
+		TimeMilliseconds: number | null,
+		RideEntryStateId: number,
+		PenaltyMilliseconds: number
 	},
 	RideEntryStates: {
 		RideEntryStateId: number,
@@ -70,6 +71,7 @@ CREATE TABLE IF NOT EXISTS "RideEntries" (
 	"Order"	INTEGER NOT NULL,
 	"TimeMilliseconds"	INTEGER DEFAULT NULL,
 	"RideEntryStateId"	INTEGER NOT NULL,
+	"PenaltyMilliseconds"	INTEGER NOT NULL DEFAULT 0,
 	PRIMARY KEY("RideEntryId" AUTOINCREMENT),
 	FOREIGN KEY("GokartId") REFERENCES "Gokarts"("GokartId"),
 	FOREIGN KEY("RideEntryStateId") REFERENCES "RideEntryStates"("RideEntryStateId"),
