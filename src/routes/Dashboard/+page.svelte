@@ -9,6 +9,7 @@
     import type { GETResponse as Ride } from "../api/tournaments/[id]/rides/+server";
     import "./style.css";
     import { RideEntryState, RideEntryStatesReadable } from "$lib/ts/database/databaseStates";
+    import { time } from "console";
 
     const controllerApi = resolve("/api/controllerEvents");
     let eventSource: EventSource | null = null;
@@ -96,6 +97,13 @@
                 method: "POST",
                 body: JSON.stringify({ time: runTime })
             });
+
+            if(timePenalty != 0) {
+                const request = await fetch(resolve("/api/tournaments/[id]/rides/[rideId]/entries/[entryId]", { id: selectedTournamentId!.toString(), rideId: selectedRideId!.toString(), entryId: currentRideEntryId!.toString() }), {
+                    method: "PATCH",
+                    body: JSON.stringify({ penaltyMilliseconds: timePenalty * 1000 })
+                });
+            }
         }
         else {
             const request = await fetch(resolve("/api/tournaments/[id]/rides/[rideId]/entries/[entryId]/disqualify", { id: selectedTournamentId!.toString(), rideId: selectedRideId!.toString(), entryId: currentRideEntryId!.toString() }), {
