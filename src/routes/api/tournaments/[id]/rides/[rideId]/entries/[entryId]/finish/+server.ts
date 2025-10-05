@@ -1,5 +1,5 @@
-import { db } from "$lib/ts/database.server.js";
-import { select, update } from "$lib/ts/queryBuilder";
+import { db } from "$lib/database/database.server.js";
+import { select, update } from "$lib/database/queryBuilder";
 import { intParser, validate, validateRequestJSON } from "$lib/ts/validation.server.js";
 import { error } from "@sveltejs/kit";
 
