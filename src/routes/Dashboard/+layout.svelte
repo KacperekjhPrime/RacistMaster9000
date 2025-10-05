@@ -15,5 +15,8 @@
   main {
     margin-left: 6rem;
     width: calc(100% - 12rem);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
   }
 </style>
