@@ -94,6 +94,14 @@ class SelectQueryBuilder<T, Fields> {
     }
 
     /**
+     * Prints the contents of the statement to the console.
+     */
+    debug() {
+        console.log(this.toString());
+        return this;
+    }
+
+    /**
      * Prepares an SQL statement
      * @returns Prepared statement
      */
