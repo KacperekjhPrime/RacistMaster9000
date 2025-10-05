@@ -81,6 +81,7 @@ export function GET({ params }) {
 export type POSTResponse = {
     rideId: number,
     entries: {
+        entryId: number,
         riderId: number,
         gokartId: number,
         order: number
