@@ -33,6 +33,7 @@ class SelectQueryBuilder<T, Fields> {
     #keys: string[];
     #joins: { table: string, using: string }[] = []
     #where = '';
+    #groupBy = '';
     #orderBy = '';
 
     constructor(from: string, keys: string[]) {
@@ -69,11 +70,20 @@ class SelectQueryBuilder<T, Fields> {
     }
 
     /**
+     * Adds a GROUP BY clause to the query.
+     * @param key Column to group by
+     */
+    groupBy(key: RawKeyToBasic<keyof T>) {
+        this.#groupBy = ` GROUP BY ${key}`;
+        return this;
+    }
+
+    /**
      * Adds an ORDER BY clause to the query.
      * @param column Column to order by
      * @param ascending If true, the results will be sorted in ascending order, otherwise in descending
      */
-    orderBy(column: string, ascending: boolean) {
+    orderBy(column: RawKeyToComplex<keyof T | keyof Fields>, ascending: boolean) {
         this.#orderBy = ` ORDER BY ${column} ${ascending ? 'ASC' : 'DESC'}`;
         return this;
     }
@@ -89,6 +99,7 @@ class SelectQueryBuilder<T, Fields> {
             statement += ` JOIN ${table} USING (${using})`;
         }
         statement += this.#where;
+        statement += this.#groupBy;
         statement += this.#orderBy;
         return statement;
     }
