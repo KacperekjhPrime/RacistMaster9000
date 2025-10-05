@@ -55,24 +55,6 @@ export type Database = {
 	}
 }
 
-export enum RideEntryState {
-	NotStarted = 1,
-	Finished,
-	Disqualified
-}
-
-export enum RideState {
-	NotStarted = 1,
-	InProgres,
-	Finished
-}
-
-export enum TournamentState {
-	NotStarted = 1,
-	InProgress,
-	Finished
-}
-
 export const databaseSchema =
 `BEGIN TRANSACTION;
 CREATE TABLE IF NOT EXISTS "Gokarts" (
@@ -147,14 +129,13 @@ CREATE TABLE IF NOT EXISTS "Tournaments" (
 	"TournamentStateId"	INTEGER NOT NULL,
 	PRIMARY KEY("TournamentId" AUTOINCREMENT)
 );
-INSERT OR REPLACE INTO "RideEntryStates" VALUES (1,'Nie rozpoczęty');
+INSERT OR REPLACE INTO "RideEntryStates" VALUES (1,'Nierozpoczęty');
 INSERT OR REPLACE INTO "RideEntryStates" VALUES (2,'Zakończony');
 INSERT OR REPLACE INTO "RideEntryStates" VALUES (3,'Dyskwalifikowany');
-INSERT OR REPLACE INTO "RideStates" VALUES (1,'Nie rozpoczęty');
+INSERT OR REPLACE INTO "RideStates" VALUES (1,'Nierozpoczęty');
 INSERT OR REPLACE INTO "RideStates" VALUES (2,'W trakcie');
 INSERT OR REPLACE INTO "RideStates" VALUES (3,'Zakończony');
-INSERT OR REPLACE INTO "RideStates" VALUES (4,'Twoja mama zjadła jednego z zawodników');
-INSERT OR REPLACE INTO "TournamentStates" VALUES (1,'Nie rozpoczęty');
+INSERT OR REPLACE INTO "TournamentStates" VALUES (1,'Nierozpoczęty');
 INSERT OR REPLACE INTO "TournamentStates" VALUES (2,'W trakcie');
 INSERT OR REPLACE INTO "TournamentStates" VALUES (3,'Zakończony');
 CREATE INDEX IF NOT EXISTS "RideEntriesGokartId" ON "RideEntries" (

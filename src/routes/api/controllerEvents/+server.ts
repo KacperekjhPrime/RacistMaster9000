@@ -1,7 +1,7 @@
 import parseData from "$lib/helper";
 
 // const controllerAddress: string = "http://192.168.0.1/awp/1/index.html";
-const controllerAddress: string = "http://localhost:2137/";
+const controllerAddress: string = "http://localhost:5173/";
 let eventStreamController: ReadableStreamDefaultController<any> | null = null;
 
 let previousData: string = "";

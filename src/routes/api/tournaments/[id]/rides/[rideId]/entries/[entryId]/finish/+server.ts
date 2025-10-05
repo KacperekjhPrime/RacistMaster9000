@@ -1,5 +1,5 @@
 import { db } from "$lib/ts/database/database.server.js";
-import { RideEntryState } from "$lib/ts/database/databaseSchema.server.js";
+import { RideEntryState } from "$lib/ts/database/databaseStates";
 import { update } from "$lib/ts/database/queryBuilder.server";
 import { validateRequestJSON } from "$lib/ts/validation.server.js";
 import { getAndValidateEntryIDs, tryFinishRide } from "../../entriesShared.server.js";

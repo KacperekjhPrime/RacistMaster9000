@@ -100,10 +100,11 @@ export function formatTime(time: number): string {
             }
             first = false;
             output += Math.floor(time / weights[i]).toString().padStart(2, "0");
-            time -= Math.floor(time / weights[i]) * weights[i];
+            time %= weights[i];
         }
     }
 
-    if(output == "") output = "00:00.0000"
+    if(output == "") output = "00:00.000"
+    else if(output.length < 6) output = "00" + output;
     return output;
 }
