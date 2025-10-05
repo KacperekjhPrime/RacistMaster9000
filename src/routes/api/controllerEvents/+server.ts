@@ -1,7 +1,7 @@
 import parseData from "$lib/helper";
 
 // const controllerAddress: string = "http://192.168.0.1/awp/1/index.html";
-const controllerAddress: string = "http://localhost:5174/";
+const controllerAddress: string = "http://localhost:5173/";
 let eventStreamController: ReadableStreamDefaultController<any> | null = null;
 
 let previousData: string = "";
@@ -22,7 +22,6 @@ async function fetchControllerData(): Promise<void> {
     previousData = result;
 
     const data = parseData(result);
-    console.log(data);
     eventStreamController?.enqueue(`event:update\ndata:${btoa(JSON.stringify(data))}\n\n`);
 }
 

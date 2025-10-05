@@ -2,6 +2,9 @@
     import { resolve } from "$app/paths";
     import { formatTime, type ControllerData } from "$lib/helper";
     import { onMount } from "svelte";
+    import TournamentSelector from "$lib/components/TournamentSelector.svelte";
+    import RideSelector from "$lib/components/RideSelector.svelte";
+    import QueueViewer from "$lib/components/QueueViewer.svelte";
 
     const controllerApi = resolve("/api/controllerEvents");
     let eventSource: EventSource | null = null;
@@ -20,6 +23,7 @@
     let lapsLeft: number = $state(0);
     let lockStatus: boolean = false;
     let selectedTournamentId: number | null = $state(null);
+    let selectedRideId: number | null = $state(null);
 
     function restartRun() {
         runTime = 0;
@@ -59,9 +63,10 @@
     }
 
     let tournamentsRequest: Promise<Tournament[]> = $state(new Promise<Tournament[]>(() => {}));
-    let ridesRequest: Promise<Ride[]> = $derived(getRides(selectedTournamentId ?? 1));
+    let ridesRequest: Promise<Ride[]> = $derived(getRides(selectedTournamentId));
 
-    async function getRides(id: number): Promise<Ride[]> {
+    async function getRides(id: number | null): Promise<Ride[]> {
+        if(id == null) return [];
         const request = await fetch(resolve("/api/tournaments/[id]/rides", { id: id.toString() }))
         const data = await request.json() as Ride[];
         data.filter(r => r.RideEntryStateId == 1);
@@ -88,23 +93,10 @@
     <h3>{JSON.stringify(controllerData)}</h3>
     <h1>Strona główna</h1>
     <p>Wybierz wyścig:</p>
-    <select bind:value={selectedTournamentId}>
-        {#await tournamentsRequest then data} 
-            {#each data.filter(t => t.TournamentStateId == 2) as tournament}
-                <option value={tournament.TournamentId}>{tournament.Name}</option>
-            {/each}
-        {/await}
-    </select>
+    <TournamentSelector {tournamentsRequest} bind:selectedTournamentId={selectedTournamentId}/>
+    <RideSelector {ridesRequest} bind:selectedRideId={selectedRideId}/>
     <p>Kolejka:</p>
-    {#await ridesRequest then data}
-        {#if data.length == 0}
-            <p>Brak przejazdów do wykonania</p>
-        {:else}
-            {#each data as ride}
-                <p>{ride.Entries[0].Name}</p>
-            {/each}
-        {/if}
-    {/await}
+    <QueueViewer {selectedRideId} {ridesRequest}/>
     <br><br>
     <h2>Status: {runState}</h2>
     <h3>Timer: {formatTime(runTime)}</h3>
