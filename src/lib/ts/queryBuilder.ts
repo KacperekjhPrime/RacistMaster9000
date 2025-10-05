@@ -2,7 +2,7 @@ import { db } from "./database.server";
 import type { Database } from "./databaseSchema.server";
 import type { Tail, TryIndex } from "./helper";
 
-type Tables = keyof Database;
+export type Tables = keyof Database;
 
 // Key manipulation types
 type Stringable = string | number | boolean | bigint | null;
@@ -17,8 +17,8 @@ type ComplexKeyToAlias<T> = T extends `${string} ${As} ${infer Alias}` ? Alias :
 type BasicKeyToRaw<T> = T extends `${Opt<'"'>}${infer Key}${Opt<'"'>}` ? Key : T;
 
 type RawKeyOf<Table extends Tables> = keyof Database[Table];
-type BasicKeyOf<Table extends Tables> = keyof { [K in RawKeyOf<Table> as RawKeyToBasic<K>]: unknown };
-type ComplexKeyOf<Table extends Tables> = keyof { [K in RawKeyOf<Table> as RawKeyToComplex<K>]: unknown };
+export type BasicKeyOf<Table extends Tables> = keyof { [K in RawKeyOf<Table> as RawKeyToBasic<K>]: unknown };
+export type ComplexKeyOf<Table extends Tables> = keyof { [K in RawKeyOf<Table> as RawKeyToComplex<K>]: unknown };
 
 type FieldsOf<Table extends Tables, Keys extends readonly ComplexKeyOf<Table>[]> = 
     Keys['length'] extends 0 ? {} : { [K in Keys[0] as ComplexKeyToAlias<K>]: TryIndex<Database[Table], ComplexKeyToSimple<Keys[0]>> } & FieldsOf<Table, Tail<Keys>>;
@@ -102,7 +102,7 @@ class SelectQueryBuilder<T, Fields> {
  * Creates a SelectQueryBuilder object
  * @param from Table that the query will select from
  * @param keys Columns that the query will select
- * @returns An instance of QueryBuilder
+ * @returns An instance of SelectQueryBuilder
  */
 export function select<Table extends Tables, Keys extends ComplexKeyOf<Table>[]>(from: Table, keys: Keys) {
     return new SelectQueryBuilder<Database[Table], FieldsOf<Table, Keys>>(from, keys);
@@ -138,6 +138,65 @@ class InsertQueryBuilder<Table extends Tables, Values extends any[]> {
 type BasicKeysToColumnTypeTuple<Table extends Tables, Keys extends readonly BasicKeyOf<Table>[]> =
     Keys['length'] extends 0 ? [] : [TryIndex<Database[Table], BasicKeyToRaw<Keys[0]>>, ...BasicKeysToColumnTypeTuple<Table, Tail<Keys>>];
 
+/**
+ * Creates an InsertQueryBuilder object
+ * @param table Table that the query will insert into
+ * @param keys Columns that the query will set the values of
+ * @returns An instance of InsertQueryBuilder
+ */ 
 export function insert<Table extends Tables, Keys extends BasicKeyOf<Table>[]>(table: Table, keys: Keys) {
     return new InsertQueryBuilder<Table, BasicKeysToColumnTypeTuple<Table, Keys>>(table, keys);
+}
+
+class UpdateQueryBuilder<Table extends Tables, Values extends any[]> {
+    #table: string;
+    #keys: BasicKeyOf<Table>[];
+    #where = '';
+
+    constructor(table: Table, keys: BasicKeyOf<Table>[]) {
+        this.#table = table;
+        this.#keys = keys;
+    }
+
+    /**
+     * Adds a WHERE clause to the query. Adding multiple conditions using this function will automatically concat them using AND operator.
+     * @param condition Condition to use in the query
+     * @returns this
+     */
+    where(condition: string) {
+        if (this.#where.length > 0) {
+            this.#where += ' AND';
+        } else {
+            this.#where = ' WHERE'
+        }
+        this.#where += ' ' + condition;
+        return this;
+    }
+
+    /**
+     * Creates an SQL statement string
+     * @returns Statement string
+     */
+    toString() {
+        return `UPDATE ${this.#table} SET ${this.#keys.map(v => `${v as string} = ?`).join(', ')}` + this.#where;
+    }
+
+    /**
+     * Prepares an SQL statement
+     * @returns Prepared statement
+     */
+    prepare<T extends any[]>() {
+        const statement = db.prepare<[...Values, ...T]>(this.toString());
+        return statement;
+    }
+}
+
+/**
+ * Creates an UpdateQueryBuilder object
+ * @param table Table that the query will update
+ * @param keys Columns that the query will set the values of
+ * @returns An instance of UpdateQueryBuilder
+ */ 
+export function update<Table extends Tables, Keys extends BasicKeyOf<Table>[]>(table: Table, keys: Keys) {
+    return new UpdateQueryBuilder<Table, BasicKeysToColumnTypeTuple<Table, Keys>>(table, keys);
 }

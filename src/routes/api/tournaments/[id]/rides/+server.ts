@@ -12,7 +12,7 @@ const selectTournament = select('Tournaments', ['TournamentId'] as const)
     .where('Tournaments.TournamentId = ?')
     .prepare<[number]>();
 
-const selectRideEntries = select('RideEntries', ['RideEntryId', 'RiderId', 'GokartId', '"Order"', 'RideEntryStateId'] as const)
+const selectRideEntries = select('RideEntries', ['RideEntryId', 'RiderId', 'GokartId', '"Order"', 'TimeMilliseconds', 'RideEntryStateId'] as const)
     .join('RideEntryStates', ['State'], 'RideEntryStateId')
     .join('Riders', ['RiderId', 'Name', 'Surname', 'SchoolId'] as const, 'RiderId')
     .join('Schools', ['Name AS SchoolName', 'Acronym AS SchoolAcronym', 'City'] as const, 'SchoolId')
@@ -93,13 +93,19 @@ export function POST({ params }) {
         selectedGokartsForRiders.splice(insertionIndex, 0, { riderId, gokartId })
     }
 
+    const entryIds = new Array<number>();
+    let rideId: number;
     db.transaction(() => {
-        const { lastInsertRowid } = insertRide.run(1, id);
+        const { lastInsertRowid: rideId } = insertRide.run(1, id);
         for (let i = 0; i < selectedGokartsForRiders.length; i++) {
             const { riderId, gokartId } = selectedGokartsForRiders[i];
-            insertRideEntry.run(lastInsertRowid as number, riderId, gokartId, i, 1); // TODO: Move the 1 into a separate constant
+            const { lastInsertRowid: entryId } = insertRideEntry.run(rideId as number, riderId, gokartId, i, 1); // TODO: Move the 1 into a separate constant
+            entryIds.push(entryId as number);
         }
     })();
 
-    return json(selectedGokartsForRiders);
+    return json({
+        rideId: rideId!,
+        entries: selectedGokartsForRiders.map(({ riderId, gokartId }, i) => { return { entryId: entryIds[i], riderId, gokartId, order: i } })
+    });
 }
