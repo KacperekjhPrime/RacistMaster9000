@@ -19,14 +19,14 @@
   </div>
   {#each schools as school, index (school)}
     <div class="row" animate:flip transition:slide>
-      <span class="cell">{school.Name}</span>
-      <span class="cell">{school.City}</span>
-      <span class="cell">{school.Acronym}</span>
+      <span class="cell">{school.name}</span>
+      <span class="cell">{school.city}</span>
+      <span class="cell">{school.acronym}</span>
       <span class="cell">
         <LinkButton
           color="primary"
           defaultColor="transparent"
-          link={$page.url.pathname + "/" + school.Acronym}
+          link={$page.url.pathname + "/" + school.acronym}
         >
           <Icon fill="default" size="2rem" icon="more_horizontal"></Icon>
         </LinkButton></span

@@ -7,8 +7,8 @@
 </script>
 
 <SchoolForm
-  bind:name={school.Name}
-  bind:city={school.City}
-  bind:acronym={school.Acronym}
+  bind:name={school.name}
+  bind:city={school.city}
+  bind:acronym={school.acronym}
   modeInsert={false}
 ></SchoolForm>

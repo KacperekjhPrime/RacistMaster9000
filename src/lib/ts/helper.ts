@@ -43,3 +43,10 @@ export type Stringable = string | number | boolean | bigint | null;
  * Converts all stringable types to string, and all non-stringable into empty strings.
  */
 export type ToString<T> = T extends `${Stringable}` ? T : '';
+
+/**
+ * Creates a promise that never resolves
+ */
+export function createForeverPromise<T>(): Promise<T> {
+    return new Promise<T>(() => {});
+}

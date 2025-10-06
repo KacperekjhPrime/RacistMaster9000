@@ -2,27 +2,17 @@ import type { Assert } from "$lib/ts/helper.js";
 import { insert, select } from "$lib/ts/database/queryBuilder.server";
 import { validateRequestJSON } from "$lib/ts/validation.server.js";
 import { json } from "@sveltejs/kit";
+import type { InsertResponse, School } from "$lib/ts/models/databaseModels.js";
 
 const selectAllSchools = select('Schools', ['SchoolId AS schoolId', 'Name AS name', 'Acronym AS acronym', 'City AS city'] as const)
     .prepare();
 
 const insertSchool = insert('Schools', ['Name', 'Acronym', 'City'] as const).prepare();
 
-export type GETResponse = {
-    schoolId: number,
-    name: string,
-    acronym: string,
-    city: string
-}[]
-
 export function GET(): Response {
     const result = selectAllSchools.all();
-    type _ = Assert<GETResponse, typeof result>;
+    type _ = Assert<School[], typeof result>;
     return json(result);
-}
-
-export type POSTResponse = {
-    id: number
 }
 
 export async function POST({ request }): Promise<Response> {
@@ -30,6 +20,6 @@ export async function POST({ request }): Promise<Response> {
     const result = {
         id: Number(insertSchool.run(name, acronym, city))
     }
-    type _ = Assert<POSTResponse, typeof result>;
+    type _ = Assert<InsertResponse, typeof result>;
     return json(result);
 }

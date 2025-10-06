@@ -1,5 +1,6 @@
 import { select, update } from "$lib/ts/database/queryBuilder.server";
 import type { Assert } from "$lib/ts/helper";
+import type { Gokart } from "$lib/ts/models/databaseModels.js";
 import { intParser, makeOptional, validate, validateRequestJSON } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
 
@@ -7,16 +8,11 @@ const selectGokart = select('Gokarts', ['GokartId AS gokartId', 'Name AS name'] 
     .where('Gokarts.GokartId = ?')
     .prepare<[number]>();
 
-export type GETResponse = {
-    gokartId: number,
-    name: string
-};
-
 export function GET({ params }) {
     const id = validate(params.id, intParser, 'id');
     const data = selectGokart.get(id);
     if (data === undefined) error(404, `Gokart ${id} does not exist.`);
-    type _ = Assert<GETResponse, typeof data>;
+    type _ = Assert<Gokart, typeof data>;
     return json(data);
 }
 

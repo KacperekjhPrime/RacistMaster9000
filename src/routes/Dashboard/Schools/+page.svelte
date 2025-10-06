@@ -6,8 +6,8 @@
 
   let schools: Array<School> = $state([]);
 
-  onMount(() => {
-    schools = OmniAPI.getSchools();
+  onMount(async () => {
+    schools = await OmniAPI.getSchools();
   });
 </script>
 

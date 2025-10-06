@@ -4,6 +4,7 @@ import { makeOptional, validate, validateRequestJSON } from "$lib/ts/validation.
 import { intParser } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
 import { RideEntryState } from "$lib/ts/database/databaseSchema.server.js";
+import type { TournamentFullRaw } from "$lib/ts/models/databaseModels.js";
 
 const selectOneTournament = select('Tournaments', ['TournamentId AS tournamentId', 'Name AS name', 'StartTimestamp AS startTimestamp', 'EndTimestamp AS endTimestamp', 'TournamentStateId AS tournamentStateId'] as const)
     .join('TournamentStates', ['State AS state'] as const, 'TournamentStateId')
@@ -30,33 +31,6 @@ const selectLeaderboard = select('RideEntries', ['MIN(TimeMilliseconds) AS bestT
     .orderBy('bestTime', true)
     .prepare<[tournamentId: number]>();
 
-export type GETResponse = {
-    tournamentId: number,
-    name: string,
-    startTimestamp: number,
-    endTimestamp: number,
-    tournamentStateId: number
-    riders: {
-        riderId: number,
-        name: string,
-        surname: string,
-        schoolId: number
-    }[],
-    rides: {
-        rideId: number,
-        rideStateId: number
-        state: string
-    }[],
-    leaderboard: {
-        riderId: number,
-        riderName: string,
-        riderSurname: string,
-        schoolId: number,
-        schoolNameAcronym: string,
-        bestTime: number
-    }[]
-}
-
 export function GET({ params }) {
     const id = validate(params.id, intParser, 'id');
 
@@ -70,7 +44,7 @@ export function GET({ params }) {
         leaderboard: selectLeaderboard.all(id)
     };
 
-    type _ = Assert<GETResponse, typeof result>;
+    type _ = Assert<TournamentFullRaw, typeof result>;
 
     return json(result);
 }

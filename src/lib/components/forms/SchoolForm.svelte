@@ -23,12 +23,12 @@
     city?: string;
     acronym?: string;
     modeInsert?: boolean;
-    addSchool?: (school: School) => void;
-    deleteSchool?: (school: School) => void;
+    addSchool?: (school: Omit<School, 'schoolId'>) => void;
+    deleteSchool?: (school: Omit<School, 'schoolId'>) => void;
   } = $props();
 
-  function AddSchool() {
-    addSchool({ Name: name, City: city, Acronym: acronym });
+  async function AddSchool() {
+    await addSchool({ name, city, acronym });
   }
   function DeleteSchool() {}
 </script>
