@@ -10,7 +10,6 @@
     import { createForeverPromise } from "$lib/ts/helper";
     import "./style.css";
 
-    const controllerApi = resolve("/api/controllerEvents");
     let eventSource: EventSource | null = null;
     
     let { data } = $props();
@@ -80,7 +79,7 @@
         OmniAPI.getRides(selectedTournamentId).then(v => ridesList = v);
     });
 
-    let currentRideEntryId = $state();
+    let currentRideEntryId: number | null = $state(null);
     
     $effect(() => { getCurrentRideEntryId(selectedRideId) });
 
@@ -90,30 +89,24 @@
     }
 
     async function finishRideEntry() {
+        if(selectedTournamentId == null || selectedRideId == null || currentRideEntryId == null || controllerData?.timeMs == null) return;
+
         if(runState != RideEntryState.Disqualified) {
-            const request = await fetch(resolve("/api/tournaments/[id]/rides/[rideId]/entries/[entryId]/finish", { id: selectedTournamentId!.toString(), rideId: selectedRideId!.toString(), entryId: currentRideEntryId!.toString() }), {
-                method: "POST",
-                body: JSON.stringify({ time: runTime })
-            });
+            OmniAPI.finishRideEntry(selectedTournamentId, selectedRideId, currentRideEntryId, controllerData?.timeMs);
 
             if(timePenalty != 0) {
-                const request = await fetch(resolve("/api/tournaments/[id]/rides/[rideId]/entries/[entryId]", { id: selectedTournamentId!.toString(), rideId: selectedRideId!.toString(), entryId: currentRideEntryId!.toString() }), {
-                    method: "POST",
-                    body: JSON.stringify({ penaltyMilliseconds: timePenalty * 1000 })
-                });
+                OmniAPI.addTimePenalty(selectedTournamentId, selectedRideId, currentRideEntryId, timePenalty * 1000);
             }
         }
         else {
-            const request = await fetch(resolve("/api/tournaments/[id]/rides/[rideId]/entries/[entryId]/disqualify", { id: selectedTournamentId!.toString(), rideId: selectedRideId!.toString(), entryId: currentRideEntryId!.toString() }), {
-                method: "POST",
-            });
+            OmniAPI.disqualifyRideEntry(selectedTournamentId, selectedRideId, currentRideEntryId);
         }
 
         restartRun();
     }
 
     onMount(async () => {
-        eventSource = new EventSource(controllerApi);
+        eventSource = new EventSource(resolve("/api/controllerEvents"));
         eventSource.addEventListener("update", event => {
             update(JSON.parse(atob(event.data)) as ControllerData);
         });

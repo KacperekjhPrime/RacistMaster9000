@@ -130,13 +130,24 @@ const OmniAPI = {
       entryId: entryId.toString()
     }) as void;
   },
-  async finishRideEntry(tournamentId: number, rideId: number, entryId: number) {
+  async finishRideEntry(tournamentId: number, rideId: number, entryId: number, time: number) {
     return await postAPI('/api/tournaments/[id]/rides/[rideId]/entries/[entryId]/finish', {
       id: tournamentId.toString(),
       rideId: rideId.toString(),
       entryId: entryId.toString()
+    }, {
+      time
     }) as void;
   },
+  async addTimePenalty(tournamentId: number, rideId: number, entryId: number, penaltyTime: number) {
+    return await patchAPI('/api/tournaments/[id]/rides/[rideId]/entries/[entryId]', {
+      id: tournamentId.toString(),
+      rideId: rideId.toString(),
+      entryId: entryId.toString()
+    }, {
+      penaltyTime
+    }) as void;
+  }
 };
 
 export default OmniAPI;
