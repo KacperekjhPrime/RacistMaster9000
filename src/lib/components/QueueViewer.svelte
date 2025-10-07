@@ -1,20 +1,18 @@
 <script lang="ts">
-    import type { Ride } from "$lib/ts/models/databaseModels";
+    import { RideEntryState, type Ride } from "$lib/ts/models/databaseModels";
 
     interface Props {
         selectedRideId: number | null;
-        ridesRequest: Promise<Ride[]>;
+        ridesList: Ride[];
     }
 
-    let { selectedRideId, ridesRequest }: Props = $props();
+    let { selectedRideId, ridesList }: Props = $props();
 </script>
 
-{#await ridesRequest then data}
-    {#if selectedRideId == null}
-        <p>Brak przejazdów do wykonania</p>
-    {:else}
-        {#each data.filter(r => r.rideId == selectedRideId)[0].entries.filter(e => e.rideEntryStateId == RideEntryState.NotStarted) as ride}
-            <p>{ride.riderName} {ride.riderSurname} {ride.schoolNameAcronym} - {ride.gokartName}</p>
-        {/each}
-    {/if}
-{/await}
+{#if selectedRideId == null}
+    <p>Brak przejazdów do wykonania</p>
+{:else}
+    {#each ridesList.filter(r => r.rideId == selectedRideId)[0].entries.filter(e => e.rideEntryStateId == RideEntryState.NotStarted) as ride}
+        <p>{ride.riderName} {ride.riderSurname} {ride.schoolNameAcronym} - {ride.gokartName}</p>
+    {/each}
+{/if}

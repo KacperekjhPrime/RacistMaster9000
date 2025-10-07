@@ -5,11 +5,10 @@
     import TournamentSelector from "$lib/components/TournamentSelector.svelte";
     import RideSelector from "$lib/components/RideSelector.svelte";
     import QueueViewer from "$lib/components/QueueViewer.svelte";
-    import type { Ride, TournamentBasic } from "$lib/ts/models/databaseModels.js";
-    import OmniAPI from "$lib/ts/OmniAPI/OmniAPI.js";
-    import { createForeverPromise } from "$lib/ts/helper.js";
-    import TournamentTable from "$lib/components/tables/TournamentTable.svelte";
-    import { create } from "domain";
+    import { RideEntryState, RideEntryStatesReadable, type Ride, type TournamentBasic, type TournamentFull } from "$lib/ts/models/databaseModels";
+    import OmniAPI from "$lib/ts/OmniAPI/OmniAPI";
+    import { createForeverPromise } from "$lib/ts/helper";
+    import "./style.css";
 
     const controllerApi = resolve("/api/controllerEvents");
     let eventSource: EventSource | null = null;
@@ -73,16 +72,21 @@
         }
     }
 
-    let tournamentsRequest = $state(createForeverPromise<TournamentBasic[]>());
-    let ridesRequest = $derived(selectedTournamentId === null ? createForeverPromise<Ride[]>() : OmniAPI.getRides(selectedTournamentId));
+    let tournamentsList: TournamentBasic[] = $state([]);
+    let ridesList: Ride[] = $state([]);
+
+    $effect(() => {
+        if(selectedTournamentId === null) return;
+        OmniAPI.getRides(selectedTournamentId).then(v => ridesList = v);
+    });
 
     let currentRideEntryId = $state();
     
     $effect(() => { getCurrentRideEntryId(selectedRideId) });
 
     async function getCurrentRideEntryId(selectedRideId: number | null) {
-        if(selectedRideId == null) return;
-        currentRideEntryId = (await ridesRequest).filter(r => r.rideId == selectedRideId)[0].entries.filter(e => e.rideEntryStateId == RideEntryState.NotStarted)[0].rideEntryId;
+        if(selectedRideId == null && ridesList != null) return;
+        currentRideEntryId = ridesList?.filter(r => r.rideId == selectedRideId)[0].entries.filter(e => e.rideEntryStateId == RideEntryState.NotStarted)[0].rideEntryId;
     }
 
     async function finishRideEntry() {
@@ -117,7 +121,7 @@
             errorStatus = atob(event.data);
         });
 
-        tournamentsRequest = fetch(resolve("/api/tournaments")).then(r => r.json());
+        tournamentsList = await OmniAPI.getTournaments();
     });
 </script>
 
@@ -127,8 +131,8 @@
     <h3>{JSON.stringify(controllerData)}</h3>
     <h1>Strona główna</h1>
     <p>Wybierz wyścig:</p>
-    <TournamentSelector {tournamentsRequest} bind:selectedTournamentId={selectedTournamentId}/>
-    <RideSelector {ridesRequest} bind:selectedRideId={selectedRideId}/>
+    <TournamentSelector {tournamentsList} bind:selectedTournamentId={selectedTournamentId}/>
+    <RideSelector {ridesList} bind:selectedRideId={selectedRideId}/>
     <h2>Status: {RideEntryStatesReadable[runState]}</h2>
     <h3>Timer: {formatTime(runTime)}</h3>
     {#if canSave}
@@ -136,7 +140,7 @@
     {/if}
     <h3>Okrążenia: {totalLaps - lapsLeft}/{totalLaps}</h3>
     <p>Kolejka:</p>
-    <QueueViewer {selectedRideId} {ridesRequest}/>
+    <QueueViewer {selectedRideId} {ridesList}/>
     <div class="button-container">
         <button onclick={finishRideEntry} disabled={!canSave} class="save-button">Zapisz</button>
         <button onclick={disqualify} class="disqualify-button">Dyskwalifikacja</button>
