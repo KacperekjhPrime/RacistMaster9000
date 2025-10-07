@@ -7,4 +7,4 @@
 </script>
 
 
-<SchoolForm addSchool={OmniAPI.addSchool}></SchoolForm>
+<SchoolForm insertMode={true} saveSchool={OmniAPI.addSchool}></SchoolForm>

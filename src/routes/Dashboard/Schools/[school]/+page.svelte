@@ -1,5 +1,6 @@
 <script lang="ts">
   import SchoolForm from "$lib/components/forms/SchoolForm.svelte";
+    import OmniAPI from "$lib/ts/OmniAPI/OmniAPI";
   import type { PageProps } from "./$types";
 
   let { data }: PageProps = $props();
@@ -10,5 +11,6 @@
   bind:name={school.name}
   bind:city={school.city}
   bind:acronym={school.acronym}
-  modeInsert={false}
+  insertMode={true}
+  saveSchool={OmniAPI.addSchool}
 ></SchoolForm>

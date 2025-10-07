@@ -26,7 +26,7 @@
         <LinkButton
           color="primary"
           defaultColor="transparent"
-          link={$page.url.pathname + "/" + school.acronym}
+          link={$page.url.pathname + "/" + school.schoolId}
         >
           <Icon fill="default" size="2rem" icon="more_horizontal"></Icon>
         </LinkButton></span

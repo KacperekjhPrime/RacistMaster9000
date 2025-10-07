@@ -7,33 +7,53 @@
 
 -->
 
-<script lang="ts">
-  import type { School } from "$lib/ts/models/databaseModels";
+<script lang="ts" generics="InsertMode extends boolean">
+  import type { InsertResponse, ModifyData, School } from "$lib/ts/models/databaseModels";
   import Button from "../buttons/Button.svelte";
 
+  type SaveFunctionArgs = InsertMode extends true ? [school: Omit<School, 'schoolId'>] : [id: number, school: ModifyData<School, 'schoolId'>];
+  type SaveFunction = (...args: SaveFunctionArgs) => Promise<InsertMode extends true ? InsertResponse : void>;
+  
+  type DeleteFunction = InsertMode extends true ? {
+    id?: undefined,
+    deleteSchool?: undefined
+  } : {
+    id: number,
+    deleteSchool: (id: number) => Promise<void>
+  };
+
+  type Props = {
+    name?: string,
+    city?: string,
+    acronym?: string,
+    insertMode: InsertMode,
+    saveSchool: SaveFunction;
+  } & DeleteFunction;
+
   let {
+    id,
     name = $bindable(""),
     city = $bindable(""),
     acronym = $bindable(""),
-    modeInsert = true,
-    addSchool = (school) => {},
-    deleteSchool = (school) => {},
-  }: {
-    name?: string;
-    city?: string;
-    acronym?: string;
-    modeInsert?: boolean;
-    addSchool?: (school: Omit<School, 'schoolId'>) => void;
-    deleteSchool?: (school: Omit<School, 'schoolId'>) => void;
-  } = $props();
+    insertMode,
+    saveSchool,
+    deleteSchool
+  }: Props = $props();
 
-  async function AddSchool() {
-    await addSchool({ name, city, acronym });
+  async function SaveSchool() {
+    const args: any[] = [];
+    if (id) args.push(id);
+    args.push({ name, city, acronym });
+    await saveSchool(...args as SaveFunctionArgs);
   }
-  function DeleteSchool() {}
+
+  async function DeleteSchool() {
+    if (insertMode) throw new Error(`DeleteSchool() cannot be used in insert mode.`);
+    await deleteSchool!(id!);
+  }
 </script>
 
-{#if modeInsert}
+{#if insertMode}
   <h2>Dodaj Szkołę</h2>
 {:else}
   <h2>Edytuj lub usuń szkołę</h2>
@@ -52,11 +72,11 @@
   <label for="acronym">Akronim:</label>
   <input id="acronym" type="text" bind:value={acronym} placeholder="Skrót" />
   <div>
-    {#if modeInsert}
-      <Button onclick={AddSchool} color="primary">Dodaj</Button>
+    {#if insertMode}
+      <Button onclick={SaveSchool} color="primary">Dodaj</Button>
     {:else}
       <Button onclick={DeleteSchool} color="error">Usuń</Button>
-      <Button onclick={AddSchool} color="success">Zatwierdź</Button>
+      <Button onclick={SaveSchool} color="success">Zatwierdź</Button>
     {/if}
   </div>
 </form>
