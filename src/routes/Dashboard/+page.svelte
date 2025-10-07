@@ -7,7 +7,6 @@
     import QueueViewer from "$lib/components/QueueViewer.svelte";
     import { RideEntryState, RideEntryStatesReadable, type Ride, type TournamentBasic, type TournamentFull } from "$lib/ts/models/databaseModels";
     import OmniAPI from "$lib/ts/OmniAPI/OmniAPI";
-    import { createForeverPromise } from "$lib/ts/helper";
     import "./style.css";
 
     let eventSource: EventSource | null = null;
