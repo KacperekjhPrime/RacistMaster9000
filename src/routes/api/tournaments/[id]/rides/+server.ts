@@ -3,7 +3,8 @@ import type { Assert } from "$lib/ts/helper.js";
 import { insert, select } from "$lib/ts/database/queryBuilder.server";
 import { intParser, validate } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
-import { RideEntryState } from "$lib/ts/database/databaseStates";
+import { RideEntryState } from "$lib/ts/database/databaseSchema.server.js";
+import type { Ride, RideInsertResponse } from "$lib/ts/models/databaseModels.js";
 
 const selectRides = select('Rides', ['RideId AS rideId', 'RideStateId AS rideStateId', 'TournamentId AS tournamentId'] as const)
     .join('RideStates', ['State AS state'] as const, 'RideStateId')
@@ -41,28 +42,6 @@ const insertRide = insert('Rides', ['RideStateId', 'TournamentId'] as const)
 const insertRideEntry = insert('RideEntries', ['RideId', 'RiderId', 'GokartId', '"Order"', 'RideEntryStateId'] as const)
     .prepare();
 
-export type GETResponse = {
-    rideId: number,
-    rideStateId: number,
-    tournamentId: number,
-    state: string,
-    entries: {
-        rideEntryId: number,
-        riderId: number,
-        gokartId: number,
-        order: number,
-        timeMilliseconds: number | null,
-        rideEntryStateId: number,
-        riderName: string,
-        riderSurname: string,
-        schoolId: number,
-        schoolName: string,
-        schoolNameAcronym: string,
-        city: string,
-        gokartName: string
-    }[]
-}[]
-
 export function GET({ params }) {
     const id = validate(params.id, intParser, 'id');
     
@@ -73,19 +52,9 @@ export function GET({ params }) {
         entries: selectRideEntries.all(ride.rideId)
     } });
 
-    type _ = Assert<GETResponse, typeof result>;
+    type _ = Assert<Ride[], typeof result>;
 
     return json(result);
-}
-
-export type POSTResponse = {
-    rideId: number,
-    entries: {
-        entryId: number,
-        riderId: number,
-        gokartId: number,
-        order: number
-    }[]
 }
 
 export function POST({ params }) {
@@ -146,6 +115,6 @@ export function POST({ params }) {
         rideId: rideId!,
         entries: selectedGokartsForRiders.map(({ riderId, gokartId }, i) => { return { entryId: entryIds[i], riderId, gokartId, order: i } })
     };
-    type _ = Assert<POSTResponse, typeof result>;
+    type _ = Assert<RideInsertResponse, typeof result>;
     return json(result);
 }

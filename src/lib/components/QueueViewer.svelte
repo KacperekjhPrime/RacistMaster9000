@@ -1,10 +1,9 @@
 <script lang="ts">
-    import { RideEntryState } from "$lib/ts/database/databaseStates";
-    import type { GETResponse as Ride } from "../../routes/api/tournaments/[id]/rides/+server";
+    import type { Ride } from "$lib/ts/models/databaseModels";
 
     interface Props {
         selectedRideId: number | null;
-        ridesRequest: Promise<Ride>;
+        ridesRequest: Promise<Ride[]>;
     }
 
     let { selectedRideId, ridesRequest }: Props = $props();

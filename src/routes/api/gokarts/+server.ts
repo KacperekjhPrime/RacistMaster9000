@@ -1,5 +1,6 @@
 import { insert, select } from '$lib/ts/database/queryBuilder.server.js';
 import type { Assert } from '$lib/ts/helper.js';
+import type { Gokart, InsertResponse } from '$lib/ts/models/databaseModels.js';
 import { validateRequestJSON } from '$lib/ts/validation.server';
 import { json } from '@sveltejs/kit';
 
@@ -9,19 +10,10 @@ const selectGokarts = select('Gokarts', ['GokartId AS gokartId', 'Name AS name']
 const insertGokart = insert('Gokarts', ['Name'] as const)
     .prepare();
 
-export type GETResponse = {
-    gokartId: number,
-    name: string
-}[];
-
 export function GET() {
     const data = selectGokarts.all();
-    type _ = Assert<GETResponse, typeof data>;
+    type _ = Assert<Gokart[], typeof data>;
     return json(data);
-}
-
-export type POSTResponse = {
-    id: number
 }
 
 export async function POST({ request }) {
@@ -29,6 +21,6 @@ export async function POST({ request }) {
     const data = {
         id: Number(insertGokart.run(name).lastInsertRowid)
     };
-    type _ = Assert<POSTResponse, typeof data>;
+    type _ = Assert<InsertResponse, typeof data>;
     return json(data);
 }

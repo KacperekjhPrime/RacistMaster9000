@@ -3,6 +3,7 @@ import type { Assert } from "$lib/ts/helper.js";
 import { insert, select } from "$lib/ts/database/queryBuilder.server";
 import { makeArray, validateRequestJSON } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
+import type { InsertResponse, TournamentBasicRaw } from "$lib/ts/models/databaseModels.js";
 
 const selectAllTournaments = select('Tournaments', ['TournamentId AS tournamentId', 'Name AS name', 'StartTimestamp AS startTimestamp', 'EndTimestamp AS endTimestamp', 'TournamentStateId AS tournamentStateId'] as const)
     .join('TournamentStates', ['State AS state'], 'TournamentStateId')
@@ -22,24 +23,11 @@ const insertTournament = insert('Tournaments', ['Name', 'StartTimestamp', 'EndTi
 const insertRiderTournament = insert('RiderTournaments', ['RiderId', 'TournamentId'] as const)
     .prepare();
 
-export type GETResponse = {
-    tournamentId: number,
-    name: string,
-    startTimestamp: number,
-    endTimestamp: number,
-    tournamentStateId: number,
-    state: string
-}[];
-
 export function GET(): Response {
     const result = selectAllTournaments.all();
-    type _ = Assert<GETResponse, typeof result>;
+    type _ = Assert<TournamentBasicRaw[], typeof result>;
     return json(result);
 }
-
-export type POSTResponse = {
-    id: number
-};
 
 export async function POST({ request }): Promise<Response> {
     const { name, startTimestamp, endTimestamp, stateId, riderIds } = await validateRequestJSON(request, {
@@ -69,7 +57,7 @@ export async function POST({ request }): Promise<Response> {
         id: id!
     };
 
-    type _ = Assert<POSTResponse, typeof result>;
+    type _ = Assert<InsertResponse, typeof result>;
 
     return json(result);
 }

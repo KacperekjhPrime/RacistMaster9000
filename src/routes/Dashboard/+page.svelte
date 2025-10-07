@@ -5,10 +5,11 @@
     import TournamentSelector from "$lib/components/TournamentSelector.svelte";
     import RideSelector from "$lib/components/RideSelector.svelte";
     import QueueViewer from "$lib/components/QueueViewer.svelte";
-    import type { GETResponse as Tournament } from "../api/tournaments/+server";
-    import type { GETResponse as Ride } from "../api/tournaments/[id]/rides/+server";
-    import "./style.css";
-    import { RideEntryState, RideEntryStatesReadable } from "$lib/ts/database/databaseStates";
+    import type { Ride, TournamentBasic } from "$lib/ts/models/databaseModels.js";
+    import OmniAPI from "$lib/ts/OmniAPI/OmniAPI.js";
+    import { createForeverPromise } from "$lib/ts/helper.js";
+    import TournamentTable from "$lib/components/tables/TournamentTable.svelte";
+    import { create } from "domain";
 
     const controllerApi = resolve("/api/controllerEvents");
     let eventSource: EventSource | null = null;
@@ -72,8 +73,8 @@
         }
     }
 
-    let tournamentsRequest: Promise<Tournament> = $state(new Promise<Tournament>(() => {}));
-    let ridesRequest: Promise<Ride> = $derived(getRides(selectedTournamentId));
+    let tournamentsRequest = $state(createForeverPromise<TournamentBasic[]>());
+    let ridesRequest = $derived(selectedTournamentId === null ? createForeverPromise<Ride[]>() : OmniAPI.getRides(selectedTournamentId));
 
     let currentRideEntryId = $state();
     
@@ -82,14 +83,6 @@
     async function getCurrentRideEntryId(selectedRideId: number | null) {
         if(selectedRideId == null) return;
         currentRideEntryId = (await ridesRequest).filter(r => r.rideId == selectedRideId)[0].entries.filter(e => e.rideEntryStateId == RideEntryState.NotStarted)[0].rideEntryId;
-    }
-
-    async function getRides(id: number | null): Promise<Ride> {
-        if(id == null) return [];
-        const request = await fetch(resolve("/api/tournaments/[id]/rides", { id: id.toString() }))
-        const data = await request.json() as Ride;
-        
-        return data;
     }
 
     async function finishRideEntry() {

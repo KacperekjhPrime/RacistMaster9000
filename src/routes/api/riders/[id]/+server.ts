@@ -1,9 +1,11 @@
 import { select, update } from "$lib/ts/database/queryBuilder.server";
+import type { Assert } from "$lib/ts/helper.js";
+import type { Rider } from "$lib/ts/models/databaseModels.js";
 import { validate, intParser, validateRequestJSON, makeOptional } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
 
-const selectOneRider = select('Riders', ['RiderId', 'Name', 'Surname'] as const)
-    .join('Schools', ['SchoolId', 'Name AS SchoolName', 'Acronym AS SchoolNameAcronym', 'City'] as const, 'SchoolId')
+const selectOneRider = select('Riders', ['RiderId AS riderId', 'Name AS name', 'Surname AS surname'] as const)
+    .join('Schools', ['SchoolId AS schoolId', 'Name AS schoolName', 'Acronym AS schoolNameAcronym', 'City AS city'] as const, 'SchoolId')
     .where('Riders.RiderId = ?')
     .prepare<[id: number]>();
 
@@ -16,6 +18,8 @@ export function GET({ params }) {
     
     const rider = selectOneRider.get(id);
     if (rider === undefined) error(404);
+
+    type _ = Assert<Rider, typeof rider>;
 
     return json(rider);
 }

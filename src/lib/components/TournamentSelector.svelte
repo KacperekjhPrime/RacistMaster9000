@@ -1,9 +1,9 @@
 <script lang="ts">
-    import type { GETResponse as Tournament } from "../../routes/api/tournaments/+server";
+    import type { TournamentBasic } from "$lib/ts/models/databaseModels";
 
     interface Props {
         selectedTournamentId: number | null;
-        tournamentsRequest: Promise<Tournament>;
+        tournamentsRequest: Promise<TournamentBasic[]>;
     }
 
     let { selectedTournamentId = $bindable(), tournamentsRequest }: Props = $props();
