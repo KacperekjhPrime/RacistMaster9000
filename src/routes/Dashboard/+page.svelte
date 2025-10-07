@@ -14,7 +14,17 @@
     
     let { data } = $props();
 
-    let controllerData: ControllerData | null = $state(data);
+    let runStatus: {
+        runTime: number,
+        runState: RideEntryState,
+        timePenalty: number
+    } = $state({
+        runTime: 0,
+        runState: RideEntryState.NotStarted,
+        timePenalty: 0,
+    });
+
+    let controllerData: ControllerData = $state(data);
     let runTime: number = $state(0);
     let runState: RideEntryState = $state(RideEntryState.NotStarted);
     let timer: any;
@@ -106,7 +116,7 @@
     }
 
     onMount(async () => {
-        eventSource = new EventSource(resolve("/api/controllerEvents"));
+        eventSource = new EventSource(resolve("/api/controller/events"));
         eventSource.addEventListener("update", event => {
             update(JSON.parse(atob(event.data)) as ControllerData);
         });

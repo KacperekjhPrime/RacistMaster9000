@@ -18,6 +18,9 @@ export type ControllerData = {
     finishTripped: boolean; // The finish photocell tripped
 }
 
+// export const controllerAddress: string = "http://192.168.0.1/awp/1/index.html";
+export const controllerAddress: string = "http://localhost:5173/";
+
 function getContentsOfElement(input: string, element: string): string {
     const regex = RegExp(`<${element}(?:[^>]*?)>(.*?)<\/${element}>`, "s");
     return input.match(regex)![1];
@@ -64,7 +67,7 @@ function getBoolean(input: string): boolean {
     return input !== "0";
 }
 
-export default function parseData(input: string): ControllerData {
+export function parseData(input: string): ControllerData {
     const rows = getRows(input);
     const time = parseTime(rows[timerIndex]);
     const remainingLaps = getRemainingLaps([...rows.slice(lapCountersStartIndex, lapCountersCount + lapCountersStartIndex)])
@@ -107,4 +110,11 @@ export function formatTime(time: number): string {
     if(output == "") output = "00:00.000"
     else if(output.length < 6) output = "00" + output;
     return output;
+}
+
+export async function fetchControllerData(controllerAddress: string): Promise<ControllerData> {
+    const response = await fetch(controllerAddress);
+    const result = await response.text();
+
+    return parseData(result);
 }

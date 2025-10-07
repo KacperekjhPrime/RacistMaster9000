@@ -1,32 +1,26 @@
-import parseData from "$lib/helper";
+import { controllerAddress, fetchControllerData } from "$lib/helper";
 
-// const controllerAddress: string = "http://192.168.0.1/awp/1/index.html";
-const controllerAddress: string = "http://localhost:5173/";
 let eventStreamController: ReadableStreamDefaultController<any> | null = null;
 
 let previousData: string = "";
-
-async function fetchControllerData(): Promise<void> {
-    let response;
-    let result;
+async function sendControllerData() {
     try {
-        response = await fetch(controllerAddress);
-        result = await response.text();
+        const controllerData = fetchControllerData(controllerAddress);
+
+        const stringifiedData = JSON.stringify(controllerData);
+        if(stringifiedData == previousData) return;
+        previousData = stringifiedData;
+
+        eventStreamController?.enqueue(`event:update\ndata:${btoa(stringifiedData)}\n\n`);
     }
     catch(e) {
         eventStreamController?.enqueue(`event:connectionError\ndata:${btoa(JSON.stringify("Failed to connect to controller"))}\n\n`);
         return;
     }
-
-    if(result == previousData) return;
-    previousData = result;
-
-    const data = parseData(result);
-    eventStreamController?.enqueue(`event:update\ndata:${btoa(JSON.stringify(data))}\n\n`);
 }
 
 function createReadableStream() {
-    let interval = setInterval(fetchControllerData, 100);
+    let interval = setInterval(sendControllerData, 100);
     return new ReadableStream({
         start(controller) {
             eventStreamController = controller;

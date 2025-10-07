@@ -1,6 +1,7 @@
-import type { ControllerData } from '$lib/helper';
+import type { ControllerData } from "$lib/helper";
+import { resolve } from "path";
 
-export function load() {
+export async function load() {
     const data: ControllerData = {
         numberOfLaps: 0,
         lapsLeft: 0,
@@ -10,5 +11,5 @@ export function load() {
         lapTripped: false,
         finishTripped: false
     };
-	return data;
-};
+    return data;
+}
