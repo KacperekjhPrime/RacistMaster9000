@@ -120,6 +120,7 @@
             OmniAPI.disqualifyRideEntry(selectedTournamentId, selectedRideId, currentRideEntryId);
         }
 
+        ridesList = await OmniAPI.getRides(selectedTournamentId);
         restartRun();
     }
 

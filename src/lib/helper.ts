@@ -89,26 +89,23 @@ export function parseData(input: string): ControllerData {
  * @returns The formatted time
  */
 export function formatTime(time: number): string {
-    let weights = [3600 * 1000, 60000, 1000, 1];
-    let output: string = "";
-    let first: boolean = true;
+    let output = "";
 
-    for(let i = 0; i < weights.length; i++) {
-        if(time / weights[i] > 1 || !first) {
-            if(!first && i < weights.length - 1) output += ":";
-            if(i == weights.length - 1) {
-                output += ".";
-                output += time.toString().padStart(3, "0");
-                continue;
-            }
-            first = false;
-            output += Math.floor(time / weights[i]).toString().padStart(2, "0");
-            time %= weights[i];
-        }
+    let hours = Math.floor(time / 3600000);
+    time %= 3600000;
+    let minutes = Math.floor(time / 60000);
+    time %= 60000;
+    let seconds = Math.floor(time / 1000);
+    let milliseconds = time % 1000;
+
+    if (hours > 0) {
+        output += hours.toString().padStart(2, "0") + ":";
     }
 
-    if(output == "") output = "00:00.000"
-    else if(output.length < 6) output = "00" + output;
+    output += minutes.toString().padStart(2, "0") + ":";
+    output += seconds.toString().padStart(2, "0") + ".";
+    output += milliseconds.toString().padStart(3, "0");
+
     return output;
 }
 
