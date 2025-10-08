@@ -1,5 +1,5 @@
 import type { RouteParams } from "$app/types";
-import { RideEntryState, RideState } from "$lib/ts/database/databaseSchema.server";
+import { RideEntryState, RideState } from "$lib/ts/database/databaseStates";
 import { select, update } from "$lib/ts/database/queryBuilder.server";
 import { intParser, validate } from "$lib/ts/validation.server";
 import { error } from "@sveltejs/kit";

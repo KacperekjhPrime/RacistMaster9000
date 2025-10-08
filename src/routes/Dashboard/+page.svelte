@@ -8,59 +8,67 @@
     import type { Ride, TournamentBasic } from "$lib/ts/models/databaseModels.js";
     import OmniAPI from "$lib/ts/OmniAPI/OmniAPI.js";
     import { createForeverPromise } from "$lib/ts/helper.js";
-    import TournamentTable from "$lib/components/tables/TournamentTable.svelte";
-    import { create } from "domain";
+    import "./style.css";
+    import { RideEntryState, RideEntryStatesReadable } from "$lib/ts/database/databaseStates";
 
     const controllerApi = resolve("/api/controllerEvents");
     let eventSource: EventSource | null = null;
     
     let { data } = $props();
 
-    type RunState = "Not started" | "Started" | "In progress" | "Finished" | "Disqualified";
     let controllerData: ControllerData | null = $state(data);
     let runTime: number = $state(0);
-    let runState: RunState = $state("Not started");
-    let timer: any = 0;
+    let runState: RideEntryState = $state(RideEntryState.NotStarted);
+    let timer: any;
     let errorStatus: string = $state("");
     let totalLaps: number = $derived(controllerData.numberOfLaps);
     let lapsLeft: number = $state(0);
     let lockStatus: boolean = false;
     let selectedTournamentId: number | null = $state(null);
     let selectedRideId: number | null = $state(null);
+    let canSave = $state(false);
+    let timePenalty = $state(0);
 
     function restartRun() {
         runTime = 0;
-        runState = "Not started";
+        runState = RideEntryState.NotStarted;
         lapsLeft = totalLaps;
+        canSave = false;
+        lockStatus = false;
+    }
+
+    function disqualify() {
+        if(currentRideEntryId == null) return;
+        runState = RideEntryState.Disqualified;
+        canSave = true;
     }
 
     function update(data: ControllerData) {
         controllerData = data;
         if(lockStatus) return;
 
-        if(data?.hasStarted && data.startTripped && runState == "Started") {
-            runState = "In progress";
-            timer = setInterval(() => runTime += 100);
+        if(data?.hasStarted && data.startTripped) {
+            runState = RideEntryState.InProgress;
+            timer = setInterval(() => runTime += 100, 100);
+            canSave = false;
         }
-        else if(data?.finishTripped && runState == "In progress") {
-            runState = "Finished";
+        else if(data?.finishTripped && runState == RideEntryState.InProgress) {
+            runState = RideEntryState.Finished;
             clearInterval(timer);
             runTime = data.timeMs;
             lockStatus = true;
+            canSave = true;
             return;
         }
-        else if(data?.lapTripped && runState == "In progress") {
+        else if(data?.lapTripped && RideEntryState.InProgress) {
             lapsLeft -= 1;
         }
 
-        if(runState == "In progress") return;
+        if(runState == RideEntryState.InProgress) return;
 
-        if(controllerData?.hasStarted) {
-            runState = "Started";
-            return;
-        }
-        else {
-            runState = "Not started";
+        if(!controllerData?.hasStarted) {
+            runState = RideEntryState.NotStarted;
+            canSave = false;
             return;
         }
     }
@@ -78,10 +86,26 @@
     }
 
     async function finishRideEntry() {
-        const request = await fetch(resolve("/api/tournaments/[id]/rides/[rideId]/entries/[entryId]/finish", { id: selectedTournamentId!.toString(), rideId: selectedRideId!.toString(), entryId: currentRideEntryId!.toString() }), {
-            method: "POST",
-            body: JSON.stringify({ time: timer })
-        });
+        if(runState != RideEntryState.Disqualified) {
+            const request = await fetch(resolve("/api/tournaments/[id]/rides/[rideId]/entries/[entryId]/finish", { id: selectedTournamentId!.toString(), rideId: selectedRideId!.toString(), entryId: currentRideEntryId!.toString() }), {
+                method: "POST",
+                body: JSON.stringify({ time: runTime })
+            });
+
+            if(timePenalty != 0) {
+                const request = await fetch(resolve("/api/tournaments/[id]/rides/[rideId]/entries/[entryId]", { id: selectedTournamentId!.toString(), rideId: selectedRideId!.toString(), entryId: currentRideEntryId!.toString() }), {
+                    method: "POST",
+                    body: JSON.stringify({ penaltyMilliseconds: timePenalty * 1000 })
+                });
+            }
+        }
+        else {
+            const request = await fetch(resolve("/api/tournaments/[id]/rides/[rideId]/entries/[entryId]/disqualify", { id: selectedTournamentId!.toString(), rideId: selectedRideId!.toString(), entryId: currentRideEntryId!.toString() }), {
+                method: "POST",
+            });
+        }
+
+        restartRun();
     }
 
     onMount(async () => {
@@ -105,10 +129,17 @@
     <p>Wybierz wyścig:</p>
     <TournamentSelector {tournamentsRequest} bind:selectedTournamentId={selectedTournamentId}/>
     <RideSelector {ridesRequest} bind:selectedRideId={selectedRideId}/>
-    <h2>Status: {runState}</h2>
+    <h2>Status: {RideEntryStatesReadable[runState]}</h2>
     <h3>Timer: {formatTime(runTime)}</h3>
+    {#if canSave}
+        <p>Nadaj karę czasową (s): <input type="number" bind:value={timePenalty}></p>
+    {/if}
     <h3>Okrążenia: {totalLaps - lapsLeft}/{totalLaps}</h3>
     <p>Kolejka:</p>
     <QueueViewer {selectedRideId} {ridesRequest}/>
-    <button onclick={finishRideEntry} disabled={(runState != "Finished")}>Zapisz</button>
+    <div class="button-container">
+        <button onclick={finishRideEntry} disabled={!canSave} class="save-button">Zapisz</button>
+        <button onclick={disqualify} class="disqualify-button">Dyskwalifikacja</button>
+        <button onclick={restartRun} class="cancel-button">Wyczyść</button>
+    </div>
 {/if}

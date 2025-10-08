@@ -3,8 +3,8 @@ import { select, update } from "$lib/ts/database/queryBuilder.server";
 import { makeOptional, validate, validateRequestJSON } from "$lib/ts/validation.server";
 import { intParser } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
-import { RideEntryState } from "$lib/ts/database/databaseSchema.server.js";
-import type { TournamentFullRaw } from "$lib/ts/models/databaseModels.js";
+import { RideEntryState } from "$lib/ts/database/databaseStates";
+import type { TournamentFullRaw } from "$lib/ts/models/databaseModels";
 
 const selectOneTournament = select('Tournaments', ['TournamentId AS tournamentId', 'Name AS name', 'StartTimestamp AS startTimestamp', 'EndTimestamp AS endTimestamp', 'TournamentStateId AS tournamentStateId'] as const)
     .join('TournamentStates', ['State AS state'] as const, 'TournamentStateId')
@@ -21,7 +21,7 @@ const selectRides = select('Rides', ['RideId AS rideId', 'RideStateId AS rideSta
     .where('Rides.TournamentId = ?')
     .prepare<[number]>();
 
-const selectLeaderboard = select('RideEntries', ['MIN(TimeMilliseconds) AS bestTime', 'RiderId AS riderId'] as const)
+const selectLeaderboard = select('RideEntries', ['MIN(TimeMilliseconds + PenaltyMilliseconds) AS bestTime', 'RiderId AS riderId'] as const)
     .join('Rides', [] as const, 'RideId')
     .join('Riders', ['Name AS riderName', 'Surname AS riderSurname', 'SchoolId AS schoolId'] as const, 'RiderId')
     .join('Schools', ['Acronym AS schoolNameAcronym'] as const, 'SchoolId')

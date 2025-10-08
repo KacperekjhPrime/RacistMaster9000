@@ -1,9 +1,8 @@
 <script lang="ts">
   import SchoolForm from "$lib/components/forms/SchoolForm.svelte";
-    import OmniAPI from "$lib/ts/OmniAPI/OmniAPI";
-  import type { PageProps } from "./$types";
+  import OmniAPI from "$lib/ts/OmniAPI/OmniAPI";
 
-  let { data }: PageProps = $props();
+  let { data } = $props();
   let school = $state(data.school);
 </script>
 
