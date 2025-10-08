@@ -49,3 +49,21 @@ button:disabled {
     background-color: blue;
     transition: 0.1s linear;
 }
+
+.container {
+    display: grid;
+    width: 100%;
+    grid-template-columns: auto auto;
+    gap: 10%;
+}
+
+.container-left {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.container-right {
+    display: flex;
+    justify-content: center;
+}

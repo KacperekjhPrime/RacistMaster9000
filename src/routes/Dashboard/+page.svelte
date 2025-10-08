@@ -24,6 +24,7 @@
     // });
 
     let controllerData: ControllerData = $state(data);
+    $effect(() => console.log(controllerData))
     let runTime: number = $state(0);
     let runState: RideEntryState = $state(RideEntryState.NotStarted);
     let timer: any;
@@ -139,28 +140,32 @@
     <h1>Błąd połączenia z kontrolerem</h1>
     <button onclick={() => location.reload()}>Odśwież</button>
 {:else}
-    <h3>{JSON.stringify(controllerData)}</h3>
     <h1>Strona główna</h1>
-    <p>Wybierz wyścig:</p>
-    <TournamentSelector {tournamentsList} bind:selectedTournamentId={selectedTournamentId}/>
-    <RideSelector {ridesList} bind:selectedRideId={selectedRideId}/>
-    <h2>Status: {RideEntryStatesReadable[runState]}</h2>
-    <h3>Timer: {formatTime(runTime)}</h3>
-    {#if (canSave && runState != RideEntryState.Disqualified)}
-        <p>Nadaj karę czasową (s): <input type="number" bind:value={timePenalty}></p>
-    {/if}
-    <h3>Okrążenia: {totalLaps - lapsLeft}/{totalLaps}</h3>
-    <p>Kolejka:</p>
-    <QueueViewer {selectedRideId} {ridesList}/>
-    <div class="button-container">
-        <button onclick={finishRideEntry} disabled={!canSave} class="save-button">Zapisz</button>
-        <button onclick={disqualify} disabled={currentRideEntryId == null} class="disqualify-button">
-            {#if runState == RideEntryState.Disqualified}
-            Cofnij dyskwalifikację
-            {:else}
-            Dyskwalifikacja
+    <div class="container">
+        <div class="container-left">
+            <p>Wybierz wyścig:</p>
+            <TournamentSelector {tournamentsList} bind:selectedTournamentId={selectedTournamentId}/>
+            <RideSelector {ridesList} bind:selectedRideId={selectedRideId}/>
+            <h2>Status: {RideEntryStatesReadable[runState]}</h2>
+            <h3>Timer: {formatTime(runTime)}</h3>
+            {#if (canSave && runState != RideEntryState.Disqualified)}
+                <p>Nadaj karę czasową (s): <input type="number" bind:value={timePenalty}></p>
             {/if}
-        </button>
-        <button onclick={restartRun} class="clear-button">Wyczyść</button>
+            <h3>Okrążenia: {totalLaps - lapsLeft}/{totalLaps}</h3>
+            <div class="button-container">
+                <button onclick={finishRideEntry} disabled={!canSave} class="save-button">Zapisz</button>
+                <button onclick={disqualify} disabled={currentRideEntryId == null} class="disqualify-button">
+                    {#if runState == RideEntryState.Disqualified}
+                    Cofnij dyskwalifikację
+                    {:else}
+                    Dyskwalifikacja
+                    {/if}
+                </button>
+                <button onclick={restartRun} class="clear-button">Wyczyść</button>
+            </div>
+        </div>
+        <div class="container-right">
+            <QueueViewer {selectedRideId} {ridesList}/>
+        </div>
     </div>
 {/if}
