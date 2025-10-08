@@ -11,7 +11,7 @@
 
 <select bind:value={selectedRideId}>
     {#if ridesList.length == 0}
-        <option disabled selected>Brak przejazdów</option>
+        <option disabled>Brak przejazdów</option>
     {/if}
     {#each ridesList as ride, index}
         <option value="{ride.rideId}">Przejazd {index + 1}</option>

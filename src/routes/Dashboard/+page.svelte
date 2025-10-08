@@ -5,7 +5,7 @@
     import TournamentSelector from "$lib/components/TournamentSelector.svelte";
     import RideSelector from "$lib/components/RideSelector.svelte";
     import QueueViewer from "$lib/components/QueueViewer.svelte";
-    import { RideEntryState, RideEntryStatesReadable, type Ride, type TournamentBasic, type TournamentFull } from "$lib/ts/models/databaseModels";
+    import { RideEntryState, RideEntryStatesReadable, type Ride, type TournamentBasic } from "$lib/ts/models/databaseModels";
     import OmniAPI from "$lib/ts/OmniAPI/OmniAPI";
     import "./style.css";
 
@@ -13,15 +13,15 @@
     
     let { data } = $props();
 
-    let runStatus: {
-        runTime: number,
-        runState: RideEntryState,
-        timePenalty: number
-    } = $state({
-        runTime: 0,
-        runState: RideEntryState.NotStarted,
-        timePenalty: 0,
-    });
+    // let runStatus: {
+    //     runTime: number,
+    //     runState: RideEntryState,
+    //     timePenalty: number
+    // } = $state({
+    //     runTime: 0,
+    //     runState: RideEntryState.NotStarted,
+    //     timePenalty: 0,
+    // });
 
     let controllerData: ControllerData = $state(data);
     let runTime: number = $state(0);
@@ -29,12 +29,14 @@
     let timer: any;
     let errorStatus: string = $state("");
     let totalLaps: number = $derived(controllerData.numberOfLaps);
-    let lapsLeft: number = $state(0);
+    let lapsLeft: number = $derived(controllerData.lapsLeft);
     let lockStatus: boolean = false;
     let selectedTournamentId: number | null = $state(null);
     let selectedRideId: number | null = $state(null);
     let canSave = $state(false);
     let timePenalty = $state(0);
+    let currentRideEntryId: number | null = $state(null);
+    let previousState: RideEntryState = $state(RideEntryState.NotStarted);
 
     function restartRun() {
         runTime = 0;
@@ -42,12 +44,20 @@
         lapsLeft = totalLaps;
         canSave = false;
         lockStatus = false;
+        previousState = RideEntryState.NotStarted;
     }
 
     function disqualify() {
         if(currentRideEntryId == null) return;
-        runState = RideEntryState.Disqualified;
-        canSave = true;
+        if(runState == RideEntryState.Disqualified) {
+            canSave = previousState == RideEntryState.Finished ? true : false;
+            runState = previousState;
+        }
+        else {
+            previousState = runState == RideEntryState.InProgress ? RideEntryState.NotStarted : runState;
+            runState = RideEntryState.Disqualified;
+            canSave = true;
+        }
     }
 
     function update(data: ControllerData) {
@@ -88,8 +98,6 @@
         OmniAPI.getRides(selectedTournamentId).then(v => ridesList = v);
     });
 
-    let currentRideEntryId: number | null = $state(null);
-    
     $effect(() => { getCurrentRideEntryId(selectedRideId) });
 
     async function getCurrentRideEntryId(selectedRideId: number | null) {
@@ -129,6 +137,7 @@
 
 {#if errorStatus != ""}
     <h1>Błąd połączenia z kontrolerem</h1>
+    <button onclick={() => location.reload()}>Odśwież</button>
 {:else}
     <h3>{JSON.stringify(controllerData)}</h3>
     <h1>Strona główna</h1>
@@ -137,7 +146,7 @@
     <RideSelector {ridesList} bind:selectedRideId={selectedRideId}/>
     <h2>Status: {RideEntryStatesReadable[runState]}</h2>
     <h3>Timer: {formatTime(runTime)}</h3>
-    {#if canSave}
+    {#if (canSave && runState != RideEntryState.Disqualified)}
         <p>Nadaj karę czasową (s): <input type="number" bind:value={timePenalty}></p>
     {/if}
     <h3>Okrążenia: {totalLaps - lapsLeft}/{totalLaps}</h3>
@@ -145,7 +154,13 @@
     <QueueViewer {selectedRideId} {ridesList}/>
     <div class="button-container">
         <button onclick={finishRideEntry} disabled={!canSave} class="save-button">Zapisz</button>
-        <button onclick={disqualify} class="disqualify-button">Dyskwalifikacja</button>
-        <button onclick={restartRun} class="cancel-button">Wyczyść</button>
+        <button onclick={disqualify} disabled={currentRideEntryId == null} class="disqualify-button">
+            {#if runState == RideEntryState.Disqualified}
+            Cofnij dyskwalifikację
+            {:else}
+            Dyskwalifikacja
+            {/if}
+        </button>
+        <button onclick={restartRun} class="clear-button">Wyczyść</button>
     </div>
 {/if}

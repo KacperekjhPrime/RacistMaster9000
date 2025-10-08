@@ -1,22 +1,7 @@
-import { controllerAddress, fetchControllerData } from "$lib/helper";
 
-const defaultControllerData = {
-    numberOfLaps: 0,
-    lapsLeft: 0,
-    timeMs: 0,
-    hasStarted: false,
-    startTripped: false,
-    lapTripped: false,
-    finishTripped: false
-}
+import type { ControllerData } from "$lib/helper";
 
-export async function load() {
-    let controllerData;
-    try {
-        controllerData = fetchControllerData(controllerAddress);
-    }
-    catch(e) {
-        controllerData = defaultControllerData;
-    }
+export async function load({ fetch }) {
+    const controllerData = await fetch("../api/controller/state").then(d => d.json()) as ControllerData;
     return controllerData;
 }

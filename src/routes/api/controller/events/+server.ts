@@ -5,7 +5,7 @@ let eventStreamController: ReadableStreamDefaultController<any> | null = null;
 let previousData: string = "";
 async function sendControllerData() {
     try {
-        const controllerData = fetchControllerData(controllerAddress);
+        const controllerData = await fetchControllerData(controllerAddress);
 
         const stringifiedData = JSON.stringify(controllerData);
         if(stringifiedData == previousData) return;

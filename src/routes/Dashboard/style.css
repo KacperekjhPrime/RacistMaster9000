@@ -33,6 +33,19 @@ button:disabled {
     background-color: lightcoral;
 }
 
-.cancel-button {
+.disqualify-button:active:not(:disabled) {
     color: white;
+    background-color: darkred;
+    transition: 0.1s linear;
+}
+
+.clear-button {
+    background-color: lightskyblue;
+    transition: 0.1s linear;
+}
+
+.clear-button:active {
+    color: white;
+    background-color: blue;
+    transition: 0.1s linear;
 }

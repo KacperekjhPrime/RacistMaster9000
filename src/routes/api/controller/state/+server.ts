@@ -10,10 +10,10 @@ const defaultControllerData = {
     finishTripped: false
 }
 
-export function GET(): Response {
+export async function GET(): Promise<Response> {
     let controllerData;
     try {
-        controllerData = fetchControllerData(controllerAddress);
+        controllerData = await fetchControllerData(controllerAddress);
     }
     catch(e) {
         controllerData = defaultControllerData;
