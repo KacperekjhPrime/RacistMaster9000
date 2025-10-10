@@ -1,5 +1,3 @@
-import type { RouteId } from "$app/types";
-
 /**
  * Removes the first element of a tuple type.
  */
