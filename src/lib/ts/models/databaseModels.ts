@@ -20,7 +20,8 @@ export type RiderBase = {
 
 export type Rider = RiderBase & {
   schoolName: string,
-  schoolNameAcronym: string
+  schoolNameAcronym: string,
+  city: string
 }
 
 type TournamentFullBase = {
