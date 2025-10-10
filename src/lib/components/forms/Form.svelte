@@ -67,7 +67,7 @@
         }
     });
 
-    async function disableForm(promise: Promise<unknown>): Promise<void> {
+    async function disableForm(promise: MaybePromise<unknown>): Promise<void> {
         isFormDisabled = true;
         try {
             await promise;
@@ -78,16 +78,16 @@
 
     async function deleteFn(): Promise<void> {
         if (id !== undefined && onDelete) {
-            await onDelete(id);
+            await disableForm(onDelete(id));
             history.back();
         }
     }
 
     async function save(): Promise<void> {
         if (id !== undefined) {
-            await onModify(id, context.object);
+            await disableForm(onModify(id, context.object));
         } else {
-            await onAdd(context.object);
+            await disableForm(onAdd(context.object));
         }
         history.back();
     }
