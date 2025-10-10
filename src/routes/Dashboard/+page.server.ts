@@ -1,4 +1,4 @@
-import type { ControllerData } from '$lib/helper';
+import type { ControllerData } from "$lib/ts/helper";
 
 export function load() {
     const data: ControllerData = {

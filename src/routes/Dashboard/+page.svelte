@@ -1,13 +1,12 @@
 <script lang="ts">
     import { resolve } from "$app/paths";
-    import { formatTime, type ControllerData } from "$lib/helper";
     import { onMount } from "svelte";
     import TournamentSelector from "$lib/components/TournamentSelector.svelte";
     import RideSelector from "$lib/components/RideSelector.svelte";
     import QueueViewer from "$lib/components/QueueViewer.svelte";
     import type { Ride, TournamentBasic } from "$lib/ts/models/databaseModels.js";
     import OmniAPI from "$lib/ts/OmniAPI/OmniAPI.js";
-    import { createForeverPromise } from "$lib/ts/helper.js";
+    import { createForeverPromise, formatTime, type ControllerData } from "$lib/ts/helper.js";
     import "./style.css";
     import { RideEntryState, RideEntryStatesReadable } from "$lib/ts/database/databaseStates";
 
@@ -16,7 +15,7 @@
     
     let { data } = $props();
 
-    let controllerData: ControllerData | null = $state(data);
+    let controllerData: ControllerData = $state(data);
     let runTime: number = $state(0);
     let runState: RideEntryState = $state(RideEntryState.NotStarted);
     let timer: any;
