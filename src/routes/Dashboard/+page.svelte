@@ -1,6 +1,6 @@
 <script lang="ts">
     import { resolve } from "$app/paths";
-    import { formatTime, type ControllerData } from "$lib/helper";
+    import { formatTime, getRideState, type ControllerData } from "$lib/helper";
     import { onMount } from "svelte";
     import TournamentSelector from "$lib/components/TournamentSelector.svelte";
     import RideSelector from "$lib/components/RideSelector.svelte";
@@ -8,20 +8,11 @@
     import { RideEntryState, RideEntryStatesReadable, type Ride, type TournamentBasic } from "$lib/ts/models/databaseModels";
     import OmniAPI from "$lib/ts/OmniAPI/OmniAPI";
     import "./style.css";
+    import RideStatusViewer from "$lib/components/RideStatusViewer.svelte";
 
     let eventSource: EventSource | null = null;
     
     let { data } = $props();
-
-    // let runStatus: {
-    //     runTime: number,
-    //     runState: RideEntryState,
-    //     timePenalty: number
-    // } = $state({
-    //     runTime: 0,
-    //     runState: RideEntryState.NotStarted,
-    //     timePenalty: 0,
-    // });
 
     let controllerData: ControllerData = $state(data);
     $effect(() => console.log(controllerData))
@@ -64,30 +55,25 @@
     function update(data: ControllerData) {
         controllerData = data;
         if(lockStatus) return;
+        const newState = getRideState(data, runState);
 
-        if(data?.hasStarted && data.startTripped) {
-            runState = RideEntryState.InProgress;
-            timer = setInterval(() => runTime += 100, 100);
-            canSave = false;
-        }
-        else if(data?.finishTripped && runState == RideEntryState.InProgress) {
-            runState = RideEntryState.Finished;
-            clearInterval(timer);
-            runTime = data.timeMs;
-            lockStatus = true;
-            canSave = true;
-            return;
-        }
-        else if(data?.lapTripped && RideEntryState.InProgress) {
-            lapsLeft -= 1;
-        }
+        if(newState != runState) {
+            if(newState == RideEntryState.InProgress) {
+                timer = setInterval(() => runTime += 100, 100);
+                canSave = false;
+            }
+            else if(newState == RideEntryState.Finished) {
+                clearInterval(timer);
+                runTime = data.timeMs;
+                lockStatus = true;
+                canSave = true;
+            }
+            else if(newState == RideEntryState.NotStarted) {
+                runState = RideEntryState.NotStarted;
+                canSave = false;
+            }
 
-        if(runState == RideEntryState.InProgress) return;
-
-        if(!controllerData?.hasStarted) {
-            runState = RideEntryState.NotStarted;
-            canSave = false;
-            return;
+            runState = newState;
         }
     }
 
@@ -147,12 +133,10 @@
             <p>Wybierz wyścig:</p>
             <TournamentSelector {tournamentsList} bind:selectedTournamentId={selectedTournamentId}/>
             <RideSelector {ridesList} bind:selectedRideId={selectedRideId}/>
-            <h2>Status: {RideEntryStatesReadable[runState]}</h2>
-            <h3>Timer: {formatTime(runTime)}</h3>
+            <RideStatusViewer {runState} {runTime} {lapsLeft} {totalLaps}/>
             {#if (canSave && runState != RideEntryState.Disqualified)}
                 <p>Nadaj karę czasową (s): <input type="number" bind:value={timePenalty}></p>
             {/if}
-            <h3>Okrążenia: {totalLaps - lapsLeft}/{totalLaps}</h3>
             <div class="button-container">
                 <button onclick={finishRideEntry} disabled={!canSave} class="save-button">Zapisz</button>
                 <button onclick={disqualify} disabled={currentRideEntryId == null} class="disqualify-button">

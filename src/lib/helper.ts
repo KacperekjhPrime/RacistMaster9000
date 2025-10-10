@@ -1,3 +1,5 @@
+import { RideEntryState } from "./ts/models/databaseModels";
+
 // Indexes of elements returned from the controller box
 const numberOfLapsIndex = 0;
 const lapCountersStartIndex = 1; // Starting index of remaining lap counters
@@ -114,4 +116,13 @@ export async function fetchControllerData(controllerAddress: string): Promise<Co
     const result = await response.text();
 
     return parseData(result);
+}
+
+export function getRideState(data: ControllerData, currentState: RideEntryState): RideEntryState {
+    if(data?.hasStarted && data.startTripped) return RideEntryState.InProgress;
+    else if(data?.finishTripped && currentState == RideEntryState.InProgress) return RideEntryState.Finished;
+    else if(!data?.hasStarted) return RideEntryState.NotStarted;
+    
+    if(currentState == RideEntryState.InProgress) return RideEntryState.InProgress;
+    return RideEntryState.NotStarted;
 }
