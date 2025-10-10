@@ -7,6 +7,8 @@ let eventStreamController: ReadableStreamDefaultController<any> | null = null;
 let previousData: string = "";
 
 async function fetchControllerData(): Promise<void> {
+    if (__NO_CONTROLLER) return;
+
     let response;
     let result;
     try {
