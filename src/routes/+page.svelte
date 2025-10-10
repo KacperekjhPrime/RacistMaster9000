@@ -1,48 +1,144 @@
 <script lang="ts">
-  import DummyThickData from "$lib/ts/dummyThickData/dummyThickData";
+    import { resolve } from "$app/paths";
+    import { onMount } from "svelte";
+    import TournamentSelector from "$lib/components/TournamentSelector.svelte";
+    import RideSelector from "$lib/components/RideSelector.svelte";
+    import QueueViewer from "$lib/components/QueueViewer.svelte";
+    import type { Ride, TournamentBasic } from "$lib/ts/models/databaseModels.js";
+    import OmniAPI from "$lib/ts/OmniAPI/OmniAPI.js";
+    import { createForeverPromise, formatTime, type ControllerData } from "$lib/ts/helper.js";
+    import "./style.css";
+    import { RideEntryState, RideEntryStatesReadable } from "$lib/ts/database/databaseStates";
+
+    const controllerApi = resolve("/api/controllerEvents");
+    let eventSource: EventSource | null = null;
+    
+    let { data } = $props();
+
+    let controllerData: ControllerData = $state(data);
+    let runTime: number = $state(0);
+    let runState: RideEntryState = $state(RideEntryState.NotStarted);
+    let timer: any;
+    let errorStatus: string = $state("");
+    let totalLaps: number = $derived(controllerData.numberOfLaps);
+    let lapsLeft: number = $state(0);
+    let lockStatus: boolean = false;
+    let selectedTournamentId: number | null = $state(null);
+    let selectedRideId: number | null = $state(null);
+    let canSave = $state(false);
+    let timePenalty = $state(0);
+
+    function restartRun() {
+        runTime = 0;
+        runState = RideEntryState.NotStarted;
+        lapsLeft = totalLaps;
+        canSave = false;
+        lockStatus = false;
+    }
+
+    function disqualify() {
+        if(currentRideEntryId == null) return;
+        runState = RideEntryState.Disqualified;
+        canSave = true;
+    }
+
+    function update(data: ControllerData) {
+        controllerData = data;
+        if(lockStatus) return;
+
+        if(data?.hasStarted && data.startTripped) {
+            runState = RideEntryState.InProgress;
+            timer = setInterval(() => runTime += 100, 100);
+            canSave = false;
+        }
+        else if(data?.finishTripped && runState == RideEntryState.InProgress) {
+            runState = RideEntryState.Finished;
+            clearInterval(timer);
+            runTime = data.timeMs;
+            lockStatus = true;
+            canSave = true;
+            return;
+        }
+        else if(data?.lapTripped && RideEntryState.InProgress) {
+            lapsLeft -= 1;
+        }
+
+        if(runState == RideEntryState.InProgress) return;
+
+        if(!controllerData?.hasStarted) {
+            runState = RideEntryState.NotStarted;
+            canSave = false;
+            return;
+        }
+    }
+
+    let tournamentsRequest = $state(createForeverPromise<TournamentBasic[]>());
+    let ridesRequest = $derived(selectedTournamentId === null ? createForeverPromise<Ride[]>() : OmniAPI.getRides(selectedTournamentId));
+
+    let currentRideEntryId = $state();
+    
+    $effect(() => { getCurrentRideEntryId(selectedRideId) });
+
+    async function getCurrentRideEntryId(selectedRideId: number | null) {
+        if(selectedRideId == null) return;
+        currentRideEntryId = (await ridesRequest).filter(r => r.rideId == selectedRideId)[0].entries[0].rideEntryId;
+    }
+
+    async function finishRideEntry() {
+        if(runState != RideEntryState.Disqualified) {
+            const request = await fetch(resolve("/api/tournaments/[id]/rides/[rideId]/entries/[entryId]/finish", { id: selectedTournamentId!.toString(), rideId: selectedRideId!.toString(), entryId: currentRideEntryId!.toString() }), {
+                method: "POST",
+                body: JSON.stringify({ time: runTime })
+            });
+
+            if(timePenalty != 0) {
+                const request = await fetch(resolve("/api/tournaments/[id]/rides/[rideId]/entries/[entryId]", { id: selectedTournamentId!.toString(), rideId: selectedRideId!.toString(), entryId: currentRideEntryId!.toString() }), {
+                    method: "POST",
+                    body: JSON.stringify({ penaltyMilliseconds: timePenalty * 1000 })
+                });
+            }
+        }
+        else {
+            const request = await fetch(resolve("/api/tournaments/[id]/rides/[rideId]/entries/[entryId]/disqualify", { id: selectedTournamentId!.toString(), rideId: selectedRideId!.toString(), entryId: currentRideEntryId!.toString() }), {
+                method: "POST",
+            });
+        }
+
+        restartRun();
+    }
+
+    onMount(async () => {
+        eventSource = new EventSource(controllerApi);
+        eventSource.addEventListener("update", event => {
+            update(JSON.parse(atob(event.data)) as ControllerData);
+        });
+        eventSource.addEventListener("connectionError", event => {
+            errorStatus = atob(event.data);
+        });
+
+        tournamentsRequest = fetch(resolve("/api/tournaments")).then(r => r.json());
+    });
 </script>
 
-<svelte:head>
-  <title>{DummyThickData.title}</title>
-</svelte:head>
-
-<header class="flex"><h1>This is a very professional header</h1></header>
-<section class="gallery flex">Imagine a rotating gallery here</section>
-<section class="catchphrase flex">
-  <h2>Welcome to RacistMaster9000</h2>
-</section>
-<nav class="navigation flex">
-  <p><a href="/Login">Wanna log in?</a></p>
-  <p><a href="/Register">Wanna register?</a></p>
-  <p><a href="/Dashboard">Wanna casually view results?</a></p>
-</nav>
-
-<footer class="flex">{DummyThickData.copyright}</footer>
-
-<style>
-  header {
-    width: 100%;
-    height: 4rem;
-    font-size: 2rem;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-  }
-  .gallery {
-    width: 100%;
-    height: 20rem;
-  }
-  .flex {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-  }
-  nav {
-    height: 18rem;
-    width: 100%;
-  }
-  footer {
-    width: 100%;
-  }
-</style>
-
+{#if errorStatus != ""}
+    <h1>Błąd połączenia z kontrolerem</h1>
+{:else}
+    <h3>{JSON.stringify(controllerData)}</h3>
+    <h1>Strona główna</h1>
+    <p>Wybierz wyścig:</p>
+    <TournamentSelector {tournamentsRequest} bind:selectedTournamentId={selectedTournamentId}/>
+    <RideSelector {ridesRequest} bind:selectedRideId={selectedRideId}/>
+    <h2>Status: {RideEntryStatesReadable[runState]}</h2>
+    <h3>Timer: {formatTime(runTime)}</h3>
+    {#if canSave}
+        <p>Nadaj karę czasową (s): <input type="number" bind:value={timePenalty}></p>
+    {/if}
+    <h3>Okrążenia: {totalLaps - lapsLeft}/{totalLaps}</h3>
+    <p>Kolejka:</p>
+    <QueueViewer {selectedRideId} {ridesRequest}/>
+    <div class="button-container">
+        <button onclick={finishRideEntry} disabled={!canSave} class="save-button">Zapisz</button>
+        <button onclick={disqualify} class="disqualify-button">Dyskwalifikacja</button>
+        <button onclick={restartRun} class="cancel-button">Wyczyść</button>
+    </div>
+{/if}
