@@ -2,62 +2,78 @@ import { resolve } from "$app/paths";
 import type { RouteParams } from "$app/types";
 import type { RouteId } from "$app/types";
 import type { Gokart, InsertResponse, ModifyData, Ride, RideInsertResponse, Rider, School, TournamentBasic, TournamentBasicRaw, TournamentFull, TournamentFullRaw } from "../models/databaseModels";
+import { APIError, NotFoundError } from "./APIErrors";
 
 type Args<Route extends RouteId> = RouteParams<Route> extends Record<string, never> ? [route: Route] : [route: Route, params: RouteParams<Route>];
 
-export async function getAPI<Route extends RouteId>(...params: Args<Route>): Promise<unknown> {
-  const response = await fetch(resolve(...params as any));
-  return await response.json();
+async function handleResponse(response: Response): Promise<unknown> {
+  if (!response.ok) {
+    switch (response.status) {
+      case 404: throw new NotFoundError();
+      default: throw new APIError();
+    }
+  }
+  
+  const text = await response.text();
+  if (text.length < 2) return;
+  return JSON.parse(text);
 }
 
-export async function postAPI<Route extends RouteId>(...params: [...Args<Route>, body?: any]): Promise<unknown> {
+export async function getAPI<Route extends RouteId>(fetch = window.fetch, ...params: [...Args<Route>]): Promise<unknown> {
+  const response = await fetch(resolve(...params as any));
+  return await handleResponse(response);
+}
+
+export async function postAPI<Route extends RouteId>(fetch = window.fetch, ...params: [...Args<Route>, body?: any]): Promise<unknown> {
   const response = await fetch(resolve(...params as any), {
     method: 'POST',
     body: params.at(-1) === undefined ? undefined : JSON.stringify(params.at(-1))
   });
-  return await response.json();
+  return await handleResponse(response);
 }
 
-export async function patchAPI<Route extends RouteId>(...params: [...Args<Route>, body: any]): Promise<unknown> {
+export async function patchAPI<Route extends RouteId>(fetch = window.fetch, ...params: [...Args<Route>, body: any]): Promise<unknown> {
   const response = await fetch(resolve(...params as any), {
-    method: 'POST',
+    method: 'PATCH',
     body: JSON.stringify(params.at(-1))
   });
-  return await response.json();
+  return await handleResponse(response);
 }
+
+export type IdType = number | string;
 
 const OmniAPI = {
   // Schools
-  async getSchools() {
-    return await getAPI('/api/schools') as School[];
+  async getSchools(fetch = window.fetch) {
+    return await getAPI(fetch, '/api/schools') as School[];
   },
-  async getSchool(id: number) {
-    return await getAPI('/api/schools/[id]', { id: id.toString() }) as School;
+  async getSchool(id: IdType, fetch = window.fetch) {
+    return await getAPI(fetch, '/api/schools/[id]', { id: id.toString() }) as School;
   },
-  async addSchool(school: Omit<School, 'schoolId'>) {
-    return await postAPI('/api/schools', school) as InsertResponse;
+  async addSchool(school: Omit<School, 'schoolId'>, fetch = window.fetch) {
+    return await postAPI(fetch, '/api/schools', school) as InsertResponse;
   },
-  async modifySchool(id: number, school: ModifyData<School, 'schoolId'>) {
-    return await patchAPI('/api/schools/[id]', { id: id.toString() }, school) as void;
+  async modifySchool(id: IdType, school: ModifyData<School, 'schoolId'>, fetch = window.fetch) {
+    return await patchAPI(fetch, '/api/schools/[id]', { id: id.toString() }, school) as void;
   },
 
   // Riders
-  async getRider(id: number) {
-    return await getAPI('/api/riders/[id]', { id: id.toString() }) as Rider;
+  async getRider(id: IdType, fetch = window.fetch) {
+    return await getAPI(fetch, '/api/riders/[id]', { id: id.toString() }) as Rider;
   },
-  async getRiders() {
-    return await getAPI('/api/riders') as Rider[];
+  async getRiders(fetch = window.fetch) {
+    return await getAPI(fetch, '/api/riders') as Rider[];
   },
-  async addRider(rider: Omit<Rider, 'riderId'>) {
-    return await postAPI('/api/riders', rider) as InsertResponse;
+  async addRider(rider: Omit<Rider, 'riderId'>, fetch = window.fetch) {
+    return await postAPI(fetch, '/api/riders', rider) as InsertResponse;
   },
-  async modifyRider(id: number, rider: ModifyData<Rider, 'riderId'>) {
-    return await patchAPI('/api/riders/[id]', { id: id.toString() }, rider) as void;
+  async modifyRider(id: IdType, rider: ModifyData<Rider, 'riderId'>, fetch = window.fetch) {
+    return await patchAPI(fetch, '/api/riders/[id]', { id: id.toString() }, rider) as void;
   },
 
   // Tournaments
-  async getTournament(id: number): Promise<TournamentFull> {
-    const raw = await getAPI('/api/tournaments/[id]', { id: id.toString() }) as TournamentFullRaw;
+  async getTournament(id: IdType, fetch = window.fetch): Promise<TournamentFull> {
+    const raw = await getAPI(fetch,'/api/tournaments/[id]', { id: id.toString() }) as TournamentFullRaw;
     return {
       tournamentId: raw.tournamentId,
       name: raw.name,
@@ -70,8 +86,8 @@ const OmniAPI = {
       endDate: new Date(raw.endTimestamp * 1000)
     }
   },
-  async getTournaments(): Promise<TournamentBasic[]> {
-    const data = await getAPI('/api/tournaments') as TournamentBasicRaw[]
+  async getTournaments(fetch = window.fetch): Promise<TournamentBasic[]> {
+    const data = await getAPI(fetch, '/api/tournaments') as TournamentBasicRaw[]
     return data.map(raw => {
       return {
         tournamentId: raw.tournamentId,
@@ -83,8 +99,8 @@ const OmniAPI = {
       };
     });
   },
-  async addTournament(tournament: Omit<TournamentBasic, 'tournamentId'> & { riderIds: number[] }): Promise<InsertResponse> {
-    return await postAPI('/api/tournaments', {
+  async addTournament(tournament: Omit<TournamentBasic, 'tournamentId'> & { riderIds: number[] }, fetch = window.fetch): Promise<InsertResponse> {
+    return await postAPI(fetch, '/api/tournaments', {
       name: tournament.name,
       startTimestamp: tournament.startDate.getTime() / 1000,
       endTimestamp: tournament.startDate.getTime() / 1000,
@@ -92,46 +108,46 @@ const OmniAPI = {
       riderIds: tournament.riderIds
     }) as InsertResponse;
   },
-  async modifyTournament(id: number, tournament: ModifyData<TournamentBasic, 'state' | 'tournamentId'>) {
-    return await patchAPI('/api/tournaments/[id]', { id: id.toString() }, tournament) as void;
+  async modifyTournament(id: IdType, tournament: ModifyData<TournamentBasic, 'state' | 'tournamentId'>, fetch = window.fetch) {
+    return await patchAPI(fetch,'/api/tournaments/[id]', { id: id.toString() }, tournament) as void;
   },
 
   // Gokarts
-  async getGokarts() {
-    return await getAPI('/api/gokarts') as Gokart[];
+  async getGokarts(fetch = window.fetch) {
+    return await getAPI(fetch, '/api/gokarts') as Gokart[];
   },
-  async getGokart(id: number) {
-    return await getAPI('/api/gokarts/[id]', { id: id.toString() }) as Gokart;
+  async getGokart(id: IdType, fetch = window.fetch) {
+    return await getAPI(fetch, '/api/gokarts/[id]', { id: id.toString() }) as Gokart;
   },
-  async addGokart(gokart: Omit<Gokart, 'gokartId'>) {
-    return await postAPI('/api/gokarts', gokart) as InsertResponse;
+  async addGokart(gokart: Omit<Gokart, 'gokartId'>, fetch = window.fetch) {
+    return await postAPI(fetch, '/api/gokarts', gokart) as InsertResponse;
   },
-  async modifyGokart(id: number, gokart: ModifyData<Gokart, 'gokartId'>) {
-    return await patchAPI('/api/gokarts/[id]', { id: id.toString() }, gokart);
+  async modifyGokart(id: IdType, gokart: ModifyData<Gokart, 'gokartId'>, fetch = window.fetch) {
+    return await patchAPI(fetch, '/api/gokarts/[id]', { id: id.toString() }, gokart);
   },
 
   // Rides
-  async getRides(tournamentId: number) {
-    return await getAPI('/api/tournaments/[id]/rides', { id: tournamentId.toString() }) as Ride[];
+  async getRides(tournamentId: IdType, fetch = window.fetch) {
+    return await getAPI(fetch, '/api/tournaments/[id]/rides', { id: tournamentId.toString() }) as Ride[];
   },
-  async getRide(tournamentId: number, rideId: number) {
-    throw new Error('APU not implemented yet.');
-    return await getAPI('/api/tournaments/[id]/rides/[rideId]', { id: tournamentId.toString(), rideId: rideId.toString() }) as Ride;
+  async getRide(tournamentId: IdType, rideId: IdType, fetch = window.fetch) {
+    throw new Error('API not implemented yet.');
+    return await getAPI(fetch, '/api/tournaments/[id]/rides/[rideId]', { id: tournamentId.toString(), rideId: rideId.toString() }) as Ride;
   },
-  async addRide(tournamentId: number) {
-    return await postAPI('/api/tournaments/[id]/rides', { id: tournamentId.toString() }) as RideInsertResponse;
+  async addRide(tournamentId: IdType, fetch = window.fetch) {
+    return await postAPI(fetch, '/api/tournaments/[id]/rides', { id: tournamentId.toString() }) as RideInsertResponse;
   },
 
   // Misc
-  async disqualifyRideEntry(tournamentId: number, rideId: number, entryId: number) {
-    return await postAPI('/api/tournaments/[id]/rides/[rideId]/entries/[entryId]/disqualify', {
+  async disqualifyRideEntry(tournamentId: IdType, rideId: IdType, entryId: IdType, fetch = window.fetch) {
+    return await postAPI(fetch, '/api/tournaments/[id]/rides/[rideId]/entries/[entryId]/disqualify', {
       id: tournamentId.toString(),
       rideId: rideId.toString(),
       entryId: entryId.toString()
     }) as void;
   },
-  async finishRideEntry(tournamentId: number, rideId: number, entryId: number) {
-    return await postAPI('/api/tournaments/[id]/rides/[rideId]/entries/[entryId]/finish', {
+  async finishRideEntry(tournamentId: IdType, rideId: IdType, entryId: IdType, fetch = window.fetch) {
+    return await postAPI(fetch, '/api/tournaments/[id]/rides/[rideId]/entries/[entryId]/finish', {
       id: tournamentId.toString(),
       rideId: rideId.toString(),
       entryId: entryId.toString()

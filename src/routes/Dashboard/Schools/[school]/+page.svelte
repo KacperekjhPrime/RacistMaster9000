@@ -1,15 +1,8 @@
 <script lang="ts">
-  import SchoolForm from "$lib/components/forms/SchoolForm.svelte";
-  import OmniAPI from "$lib/ts/OmniAPI/OmniAPI";
+    import SchoolForm from "$lib/components/forms/SchoolForm.svelte";
+    import { removeKeys } from "$lib/ts/helper.js";
 
-  let { data } = $props();
-  let school = $state(data.school);
+    const { data } = $props();
 </script>
 
-<SchoolForm
-  bind:name={school.name}
-  bind:city={school.city}
-  bind:acronym={school.acronym}
-  insertMode={true}
-  saveSchool={OmniAPI.addSchool}
-></SchoolForm>
+<SchoolForm id={data.school.schoolId} school={removeKeys(data.school, ['schoolId'])} />

@@ -45,8 +45,27 @@ export type Stringable = string | number | boolean | bigint | null;
 export type ToString<T> = T extends `${Stringable}` ? T : '';
 
 /**
+ * Crates an union of T and Promise<T>
+ */
+export type MaybePromise<T> = Promise<T> | T;
+
+/**
  * Creates a promise that never resolves
  */
 export function createForeverPromise<T>(): Promise<T> {
     return new Promise<T>(() => {});
+}
+
+/**
+ * Clones an object and removes given keys from it.
+ * @param object Object to clone
+ * @param keys Keys to remove
+ * @returns Cloned object
+ */
+export function removeKeys<T extends object, Keys extends (keyof T)[]>(object: T, keys: Keys): Omit<T, Keys[number]> {
+    const result = {...object};
+    for (const key of keys) {
+        delete result[key];
+    }
+    return result;
 }

@@ -27,6 +27,7 @@
           color="primary"
           defaultColor="transparent"
           link={$page.url.pathname + "/" + school.schoolId}
+          title="Edytuj"
         >
           <Icon fill="default" size="2rem" icon="more_horizontal"></Icon>
         </LinkButton></span
@@ -36,11 +37,6 @@
   <div class="row">
     <div class="cell"></div>
     <div class="cell">
-      <!-- <Button onclick={addSchool} defaultColor="secondary" color="primary">
-        Dodaj szkołe
-      </Button> -->
-      <!-- <LinkCard icon="arrow_drop_down" color="primary" link="/" contents="uwuw"
-      ></LinkCard> -->
       <LinkButton color="primary" link={$page.url.pathname + "/AddSchool"}
         >Dodaj Szkołę</LinkButton
       >

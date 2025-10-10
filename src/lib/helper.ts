@@ -19,22 +19,24 @@ export type ControllerData = {
 }
 
 function getContentsOfElement(input: string, element: string): string {
+    return '';
     const regex = RegExp(`<${element}(?:[^>]*?)>(.*?)<\/${element}>`, "s");
     return input.match(regex)![1];
 }
 
 function getRows(input: string): Array<string> {
-    const bodyContent = getContentsOfElement(input, "body");
-    const regex = RegExp("<(?:[^>]*?)>(.*?)<\/(?:[^>]*?)>");
-    const paragraphs = bodyContent.split(regex);
+    // const bodyContent = getContentsOfElement(input, "body");
+    // const regex = RegExp("<(?:[^>]*?)>(.*?)<\/(?:[^>]*?)>");
+    // const paragraphs = bodyContent.split(regex);
 
-    let output: Array<string> = [];
-    for(const paragraph of paragraphs!) {
-        if(paragraph == "" || paragraph.includes("\n")) continue;
-        output.push(paragraph);
-    }
+    // let output: Array<string> = [];
+    // for(const paragraph of paragraphs!) {
+    //     if(paragraph == "" || paragraph.includes("\n")) continue;
+    //     output.push(paragraph);
+    // }
 
-    return output;
+    // return output;
+    return [    ]
 }
 
 /**
