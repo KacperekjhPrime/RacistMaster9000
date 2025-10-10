@@ -6,7 +6,8 @@ export default defineConfig(({mode}) => {
 	return {
 		plugins: [sveltekit()],
 		define: {
-			__DEBUG: env['NODE_ENV'] === 'development'
+			__DEBUG: env['NODE_ENV'] === 'development',
+			__NO_CONTROLLER: env['NO_CONTROLLER'] === '1'
 		}
 	}
 });
