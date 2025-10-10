@@ -37,7 +37,7 @@
   }
 
   let {
-    defaultText = "Pick option",
+    defaultText = "Wybierz opcje",
     selectedOption = $bindable(-1),
     children,
   }: {
