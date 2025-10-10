@@ -123,7 +123,7 @@ const OmniAPI = {
     return await postAPI(fetch, '/api/gokarts', gokart) as InsertResponse;
   },
   async modifyGokart(id: IdType, gokart: ModifyData<Gokart, 'gokartId'>, fetch = window.fetch) {
-    return await patchAPI(fetch, '/api/gokarts/[id]', { id: id.toString() }, gokart);
+    return await patchAPI(fetch, '/api/gokarts/[id]', { id: id.toString() }, gokart) as void;
   },
 
   // Rides
