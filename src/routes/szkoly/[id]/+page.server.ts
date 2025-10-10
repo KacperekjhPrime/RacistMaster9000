@@ -5,11 +5,11 @@ import { error } from "@sveltejs/kit";
 export async function load({ params, fetch }) {
     try {
         return {
-            school: await OmniAPI.getSchool(params.school, fetch),
+            school: await OmniAPI.getSchool(params.id, fetch),
         };
     } catch (e) {
         if (!(e instanceof NotFoundError)) throw e;
 
-        error(404, `School ${params.school} does not exist.`);
+        error(404, `School ${params.id} does not exist.`);
     }
 }
