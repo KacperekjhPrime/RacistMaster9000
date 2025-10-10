@@ -204,7 +204,7 @@ class UpdateQueryBuilder<Table extends Tables, Values extends any[], ToBind exte
      * @returns this
      */
     addConstant<Key extends BasicKeyOf<Table>>(key: Key, value: TryIndex<Database[Table], BasicKeyToRaw<Key>>) {
-        this.#keys.unshift(key);
+        this.#keys.push(key);
         this.#values.push(value);
         return this as unknown as UpdateQueryBuilder<Table, Values, Values>;
     }
