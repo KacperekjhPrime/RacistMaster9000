@@ -37,6 +37,11 @@ export const siteData: SiteData = {
       icon: "check",
     },
     {
+      title: "Zawodnicy",
+      link: "/zawodnicy",
+      icon: "check"
+    },
+    {
       title: "Zawody",
       link: "/zawody",
       icon: "check",
