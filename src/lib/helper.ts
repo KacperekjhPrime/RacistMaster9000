@@ -20,6 +20,15 @@ export type ControllerData = {
     finishTripped: boolean; // The finish photocell tripped
 }
 
+export type RunState = {
+    runTime: number;
+    runStatus: RideEntryState;
+    totalLaps: number;
+    lapsLeft: number;
+    tournamentId: number | null;
+    rideId: number | null;
+}
+
 // export const controllerAddress: string = "http://192.168.0.1/awp/1/index.html";
 export const controllerAddress: string = "http://localhost:5173/";
 
