@@ -1,7 +1,7 @@
 import { resolve } from "$app/paths";
 import type { RouteParams } from "$app/types";
 import type { RouteId } from "$app/types";
-import type { Gokart, InsertResponse, ModifyData, Ride, RideInsertResponse, Rider, School, TournamentBasic, TournamentBasicRaw, TournamentFull, TournamentFullRaw } from "../models/databaseModels";
+import type { Gokart, InsertResponse, ModifyData, Ride, RideInsertResponse, Rider, RiderBase, School, TournamentBasic, TournamentBasicRaw, TournamentFull, TournamentFullRaw } from "../models/databaseModels";
 import { APIError, NotFoundError } from "./APIErrors";
 
 type Args<Route extends RouteId> = RouteParams<Route> extends Record<string, never> ? [route: Route] : [route: Route, params: RouteParams<Route>];
@@ -10,7 +10,7 @@ async function handleResponse(response: Response): Promise<unknown> {
   if (!response.ok) {
     switch (response.status) {
       case 404: throw new NotFoundError();
-      default: throw new APIError();
+      default: throw new APIError(await response.text());
     }
   }
   
@@ -64,10 +64,10 @@ const OmniAPI = {
   async getRiders(fetch = window.fetch) {
     return await getAPI(fetch, '/api/riders') as Rider[];
   },
-  async addRider(rider: Omit<Rider, 'riderId'>, fetch = window.fetch) {
+  async addRider(rider: Omit<RiderBase, 'riderId'>, fetch = window.fetch) {
     return await postAPI(fetch, '/api/riders', rider) as InsertResponse;
   },
-  async modifyRider(id: IdType, rider: ModifyData<Rider, 'riderId'>, fetch = window.fetch) {
+  async modifyRider(id: IdType, rider: ModifyData<RiderBase, 'riderId'>, fetch = window.fetch) {
     return await patchAPI(fetch, '/api/riders/[id]', { id: id.toString() }, rider) as void;
   },
 

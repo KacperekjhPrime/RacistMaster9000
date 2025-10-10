@@ -114,27 +114,25 @@
         flex-direction: column;
         align-items: center;
 
-        :global(label), :global(input), :global(div) {
+        :global(label), :global(input), :global(div), :global(select) {
             width: 100%;
             outline: transparent;
             border: none;
             padding: 1rem;
+            box-sizing: border-box;
+        }
+
+        :global(label > *) {
+            width: 100%;
         }
 
         :global(label) {
             padding-bottom: 0.25rem;
         }
 
-        :global(input) {
+        :global(input), :global(select) {
             background-color: var(--secondary);
             color: inherit;
-        }
-
-        :global(div) {
-            display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 2rem;
         }
     }
 
