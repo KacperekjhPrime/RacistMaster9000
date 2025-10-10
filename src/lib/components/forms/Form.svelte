@@ -42,14 +42,15 @@
     import type { InsertResponse } from '$lib/ts/models/databaseModels';
     import { getContext, hasContext, onMount, setContext } from 'svelte'; 
     import Button from '../buttons/Button.svelte';
+    import type { IdType } from '$lib/ts/OmniAPI/OmniAPI';
 
     interface Props {
         noun: string,
         object: T,
         onAdd: (data: T) => MaybePromise<InsertResponse>,
-        onModify: (id: number, data: T) => MaybePromise<void>
-        onDelete?: (id: number) => MaybePromise<void>
-        id?: number,
+        onModify: (id: IdType, data: T) => MaybePromise<void>
+        onDelete?: (id: IdType) => MaybePromise<void>
+        id?: IdType,
         children?: () => any
     }
 
