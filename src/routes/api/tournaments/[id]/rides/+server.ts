@@ -3,8 +3,8 @@ import type { Assert } from "$lib/ts/helper.js";
 import { insert, select } from "$lib/ts/database/queryBuilder.server";
 import { intParser, validate } from "$lib/ts/validation.server";
 import { error, json } from "@sveltejs/kit";
-import { RideEntryState } from "$lib/ts/database/databaseSchema.server.js";
-import type { Ride, RideInsertResponse } from "$lib/ts/models/databaseModels.js";
+import { RideEntryState } from "$lib/ts/database/databaseStates";
+import type { Ride, RideInsertResponse } from "$lib/ts/models/databaseModels";
 
 const selectRides = select('Rides', ['RideId AS rideId', 'RideStateId AS rideStateId', 'TournamentId AS tournamentId'] as const)
     .join('RideStates', ['State AS state'] as const, 'RideStateId')

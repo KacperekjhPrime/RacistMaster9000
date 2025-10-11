@@ -1,5 +1,4 @@
-import type { RunState } from '$lib/helper.js';
-import type { RideEntryState } from '$lib/ts/models/databaseModels.js';
+import type { RunState } from '$lib/ts/helper.js';
 
 let eventStreamController: ReadableStreamDefaultController<any> | null = null;
 

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { resolve } from "$app/paths";
     import RideStatusViewer from "$lib/components/RideStatusViewer.svelte";
-    import type { RunState } from "$lib/helper";
+    import type { RunState } from "$lib/ts/helper";
     import { RideEntryState } from "$lib/ts/database/databaseStates";
     import type { Ride } from "$lib/ts/models/databaseModels";
     import OmniAPI from "$lib/ts/OmniAPI/OmniAPI";

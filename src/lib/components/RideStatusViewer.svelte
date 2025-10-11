@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { formatTime } from "$lib/helper";
-    import { RideEntryState, RideEntryStatesReadable, type Ride } from "$lib/ts/models/databaseModels";
+    import { formatTime } from "$lib/ts/helper";
+    import { RideEntryState, RideEntryStatesReadable } from "$lib/ts/models/databaseModels";
 
     interface Props {
         runState: RideEntryState;

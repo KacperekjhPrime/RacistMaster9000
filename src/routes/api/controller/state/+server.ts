@@ -1,4 +1,4 @@
-import { fetchControllerData, controllerAddress } from "$lib/helper";
+import { fetchControllerData, controllerAddress } from "$lib/ts/helper";
 
 const defaultControllerData = {
     numberOfLaps: 0,

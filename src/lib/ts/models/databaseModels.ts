@@ -11,13 +11,17 @@ export type School = {
   acronym: string;
 };
 
-export type Rider = {
+export type RiderBase = {
   riderId: number,
   name: string,
   surname: string,
-  schoolId: number,
+  schoolId: number
+}
+
+export type Rider = RiderBase & {
   schoolName: string,
-  schoolNameAcronym: string
+  schoolNameAcronym: string,
+  city: string
 }
 
 type TournamentFullBase = {

@@ -1,4 +1,4 @@
-import { controllerAddress, fetchControllerData } from "$lib/helper";
+import { controllerAddress, fetchControllerData } from "$lib/ts/helper";
 
 let eventStreamController: ReadableStreamDefaultController<any> | null = null;
 let previousData: string = "";

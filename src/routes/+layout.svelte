@@ -1,14 +1,28 @@
 <script lang="ts">
+  import Sidebar from "$lib/components/navigation/Sidebar.svelte";
+  import { siteData } from "$lib/ts/siteData/siteData";
   import favicon from "$lib/assets/favicon.svg";
-  import DummyThickData from "$lib/ts/dummyThickData/dummyThickData";
   import "$lib/styles/global.css";
 
-  let { children } = $props();
+  let { data, children } = $props();
 </script>
 
 <svelte:head>
   <link rel="icon" href={favicon} />
-  <title>{DummyThickData.title}</title>
+  <title>{siteData.title}</title>
 </svelte:head>
 
-{@render children()}
+<main>
+  {@render children?.()}
+</main>
+<Sidebar routes={siteData.routes}></Sidebar>
+
+<style>
+  main {
+    margin-left: 6rem;
+    width: calc(100% - 12rem);
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+  }
+</style>

@@ -1,6 +1,6 @@
 <script lang="ts">
+  import type { Route } from "$lib/ts/siteData/siteData";
   import NavigationSidebarLinkCard from "../cards/NavigationSidebarLinkCard.svelte";
-  import type { Route } from "$lib/ts/models/route";
 
   let { routes }: { routes: Array<Route> } = $props();
 </script>

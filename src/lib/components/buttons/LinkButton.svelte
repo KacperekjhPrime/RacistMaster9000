@@ -14,17 +14,20 @@
     },
   };
 
+  interface Props {
+    link: string,
+    children: () => any
+    color?: keyof typeof Colors,
+    defaultColor?: keyof typeof DefaultColors,
+  }
+
   let {
     link,
     children,
     color = "default",
     defaultColor = "secondary",
-  }: {
-    link: string;
-    children: () => any;
-    color?: keyof typeof Colors;
-    defaultColor?: keyof typeof DefaultColors;
-  } = $props();
+    ...rest
+  }: Props & { [key: string]: any } = $props();
 </script>
 
 <a
@@ -33,6 +36,7 @@
     " " +
     DefaultColors[defaultColor].class +
     " button"}
+  {...rest}
 >
   {@render children()}
 </a>

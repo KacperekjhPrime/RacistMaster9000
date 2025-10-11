@@ -155,6 +155,14 @@ class InsertQueryBuilder<Table extends Tables, Values extends any[]> {
     }
 
     /**
+    * Prints the contents of the statement to the console.
+    */
+    debug() {
+        console.log(this.toString());
+        return this;
+    }
+
+    /**
      * Prepares an SQL statement
      * @returns Prepared statement
      */
@@ -196,7 +204,7 @@ class UpdateQueryBuilder<Table extends Tables, Values extends any[], ToBind exte
      * @returns this
      */
     addConstant<Key extends BasicKeyOf<Table>>(key: Key, value: TryIndex<Database[Table], BasicKeyToRaw<Key>>) {
-        this.#keys.unshift(key);
+        this.#keys.push(key);
         this.#values.push(value);
         return this as unknown as UpdateQueryBuilder<Table, Values, Values>;
     }
@@ -229,6 +237,14 @@ class UpdateQueryBuilder<Table extends Tables, Values extends any[], ToBind exte
      */
     toString() {
         return `UPDATE ${this.#table} SET ${this.#keys.map(v => `${v as string} = ?`).join(', ')}` + this.#where;
+    }
+
+    /**
+    * Prints the contents of the statement to the console.
+    */
+    debug() {
+        console.log(this.toString());
+        return this;
     }
 
     /**
