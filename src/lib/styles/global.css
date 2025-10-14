@@ -1,66 +1,103 @@
 :root {
-  --text: #f3f9fb;
-  --header: #d9d9d9;
-  --background: #081317;
-  --primary: #00458f8f;
-  --secondary: #151419;
-  --accent: #222127;
-  /* Notification colors */
-  --info: var(--primary);
-  --success: #189d00;
-  --error: #ed0800;
-  --warning: #b6aa00;
+    --text: #f3f9fb;
+    --header: #d9d9d9;
+    --background: #081317;
+    --primary: #00458f8f;
+    --secondary: #151419;
+    --accent: #222127;
+    /* Notification colors */
+    --info: var(--primary);
+    --success: #189d00;
+    --error: #ed0800;
+    --warning: #b6aa00;
 
-  --uiLayer: 555;
-  --transition: 0.25s ease-in;
+    --uiLayer: 555;
+    --transition: 0.25s ease-in;
 
-  color: var(--text);
-  --borderRadius: 0.5rem;
-  --borderThickness: 0.125rem;
-  --letterSpacing: 0.2rem;
-  font-size: 16px;
-  font-family: sans-serif;
+    color: var(--text);
+    --borderRadius: 0.5rem;
+    --borderThickness: 0.125rem;
+    --letterSpacing: 0.2rem;
+    font-size: 16px;
+    font-family: sans-serif;
 }
 
 a {
-  text-decoration: none;
+    text-decoration: none;
 }
 
 button {
-  border: none;
-  outline: transparent;
-  background-color: transparent;
-  cursor: pointer;
-  color: inherit;
+    border: none;
+    outline: transparent;
+    background-color: transparent;
+    cursor: pointer;
+    color: inherit;
 }
 
 body {
-  height: fit-content;
-  margin: 0;
-  padding: 0;
-  background-color: var(--accent);
+    height: fit-content;
+    margin: 0;
+    padding: 0;
+    background-color: var(--accent);
 }
 .inherit {
-  --color: inherit;
+    --color: inherit;
 }
 .info {
-  --color: var(--info);
+    --color: var(--info);
 }
 .warning {
-  --color: var(--warning);
+    --color: var(--warning);
 }
 .error {
-  --color: var(--error);
+    --color: var(--error);
 }
 .success {
-  --color: var(--success);
+      --color: var(--success);
 }
 .default {
-  --color: white;
+    --color: white;
 }
 .primary {
-  --color: var(--primary);
+    --color: var(--primary);
 }
 .secondary {
-  --color: var(--secondary);
+    --color: var(--secondary);
+}
+
+table, tr, th, td {
+    border: var(--secondary) 0.125rem solid;
+    border-collapse: collapse;
+}
+
+table {
+    width: 100%;
+}
+
+tr, th {
+    height: 4rem;
+}
+
+tr {
+    transition: var(--transition);
+}
+
+tr:hover {
+    background-color: var(--secondary);
+}
+
+th {
+    font-size: 1.4rem;
+    font-weight: 700;
+    background-color: var(--secondary);
+    box-shadow: var(--secondary) 0px 0px 0.5rem 0.05rem;
+}
+
+td {
+    text-align: center;
+}
+
+tfoot td > * {
+    margin-left: auto;
+    margin-right: auto;
 }

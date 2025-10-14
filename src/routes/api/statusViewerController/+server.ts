@@ -16,7 +16,8 @@ function createReadableStream() {
 export function GET(): Response {
     return new Response(createReadableStream(), {
         headers: {
-            "content-type": "text/event-stream"
+            "content-type": "text/event-stream",
+            'X-Accel-Buffering': 'no'
         }
     });
 }
@@ -24,6 +25,6 @@ export function GET(): Response {
 export async function POST({ request }): Promise<Response> {
     if(eventStreamController == null) return new Response();
     const status = await request.json() as RunState;
-    eventStreamController.enqueue(`event:update\ndata:${btoa(JSON.stringify(status))}`);
+    eventStreamController.enqueue(`event:update\ndata:${btoa(JSON.stringify(status))}\n\n`);
     return new Response();
 }

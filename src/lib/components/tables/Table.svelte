@@ -8,7 +8,7 @@
 <script lang="ts" generics="T">
     import { flip } from "svelte/animate";
     import Icon from "../icons/Icon.svelte";
-    import "./tables.css";
+    // import "./tables.css";
     import LinkButton from "../buttons/LinkButton.svelte";
 
     import { slide } from "svelte/transition";

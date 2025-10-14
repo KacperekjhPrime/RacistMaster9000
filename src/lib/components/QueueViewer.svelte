@@ -12,24 +12,9 @@
 </script>
 
 <style>
-    table, tr, td, th {
-        border: 2px solid white;
-        border-collapse: collapse;
-    }
-    
-    table {
-        border-radius: 1rem;
-    }
-
-    th {
-        padding: 1rem;
-        padding-left: 3rem;
-        padding-right: 3rem;
-        background-color: gray;
-    }
-
-    td {
-        padding: 1rem;
+    .container {
+        width: 100%;
+        height: fit-content;
     }
 
     .table-title {
@@ -45,9 +30,10 @@
         font-weight: bold;
         color: lightgreen;
     }
+
 </style>
 
-<div>
+<div class="container">
     <table>
         <thead>
             <tr><th colspan="4" class="table-title">Kolejka</th></tr>

@@ -38,7 +38,8 @@ export function GET(): Response {
     sendControllerData();
     return new Response(createReadableStream(), {
         headers: {
-            "content-type": "text/event-stream"
+            "content-type": "text/event-stream",
+            'X-Accel-Buffering': 'no'
         }
     });
 }

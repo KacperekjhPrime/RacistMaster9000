@@ -17,6 +17,7 @@
     let controllerData: ControllerData = $state(data);
     $effect(() => console.log(controllerData))
     let runTime: number = $state(0);
+    let runFinishedTime: number = $state(0);
     let runState: RideEntryState = $state(RideEntryState.NotStarted);
     let timer: any;
     let errorStatus: string = $state("");
@@ -37,6 +38,7 @@
         canSave = false;
         lockStatus = false;
         previousState = RideEntryState.NotStarted;
+        runFinishedTime = 0;
     }
 
     function disqualify() {
@@ -67,10 +69,13 @@
                 runTime = data.timeMs;
                 lockStatus = true;
                 canSave = true;
+                runFinishedTime = data.timeMs;
             }
             else if(newState == RideEntryState.NotStarted) {
                 runState = RideEntryState.NotStarted;
                 canSave = false;
+                clearInterval(timer);
+                runTime = 0;
             }
 
             runState = newState;
@@ -85,7 +90,21 @@
         OmniAPI.getRides(selectedTournamentId).then(v => ridesList = v);
     });
 
-    $effect(() => { getCurrentRideEntryId(selectedRideId) });
+    $effect(() => { getCurrentRideEntryId(selectedRideId); ridesList; });
+
+    $effect(() => {
+        fetch(resolve("/api/statusViewerController"), {
+            method: "POST",
+            body: JSON.stringify({
+                runStatus: runState,
+                runTime: runFinishedTime,
+                totalLaps: totalLaps,
+                lapsLeft: lapsLeft,
+                tournamentId: selectedTournamentId,
+                rideId: selectedRideId
+            })
+        })
+    });
 
     async function getCurrentRideEntryId(selectedRideId: number | null) {
         if(selectedRideId == null && ridesList != null) return;
