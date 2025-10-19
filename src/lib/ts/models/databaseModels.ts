@@ -40,14 +40,7 @@ type TournamentFullBase = {
     rideStateId: number
     state: string
   }[],
-  leaderboard: {
-    riderId: number,
-    riderName: string,
-    riderSurname: string,
-    schoolId: number,
-    schoolNameAcronym: string,
-    bestTime: number
-  }[]
+  leaderboard: LeaderboardEntry[]
 }
 
 export type TournamentFullRaw = TournamentFullBase & {
@@ -75,6 +68,15 @@ export type TournamentBasicRaw = TournamentBasicBase & {
 export type TournamentBasic = TournamentBasicBase & {
   startDate: Date;
   endDate: Date;
+};
+
+export type LeaderboardEntry = {
+  riderId: number,
+  riderName: string,
+  riderSurname: string,
+  schoolId: number,
+  schoolNameAcronym: string,
+  bestTime: number
 };
 
 export type Gokart = {

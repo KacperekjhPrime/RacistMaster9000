@@ -3,10 +3,11 @@
     import RideStatusViewer from "$lib/components/RideStatusViewer.svelte";
     import type { RunState } from "$lib/ts/helper";
     import { RideEntryState } from "$lib/ts/database/databaseStates";
-    import type { Ride } from "$lib/ts/models/databaseModels";
+    import type { LeaderboardEntry, Ride } from "$lib/ts/models/databaseModels";
     import OmniAPI from "$lib/ts/OmniAPI/OmniAPI";
     import { onMount } from "svelte";
     import Table from "$lib/components/tables/Table.svelte";
+    import LeaderboardViewer from "$lib/components/LeaderboardViewer.svelte";
 
     const defaultState: RunState = {
         runStatus: RideEntryState.NotStarted,
@@ -23,7 +24,7 @@
     let currentRiderInfo: string = $state("Brak");
     let nextRiderInfo: string = $state("Brak");
     let timer: any;
-    let leaderboard = $state();
+    let leaderboard: LeaderboardEntry[] = $state([]);
 
     $effect(() => {
         if(ride == null) return;
@@ -46,7 +47,7 @@
     });
 
     async function getPodium(tournamentId: number) {
-        leaderboard = (await OmniAPI.getTournament(tournamentId)).leaderboard;
+        leaderboard = (await OmniAPI.getTournament(tournamentId)).leaderboard as LeaderboardEntry[];
     }
 
     async function update(data: RunState) {
@@ -77,6 +78,7 @@
     });
 </script>
 
-<h1>{currentRiderInfo}</h1>
+<h1>Obecny zawodnik: {currentRiderInfo}</h1>
 <RideStatusViewer runState={runState.runStatus} runTime={runState.runTime} totalLaps={runState.totalLaps} lapsLeft={runState.lapsLeft} />
 <h3>Następny: {nextRiderInfo}</h3>
+<LeaderboardViewer {leaderboard}/>

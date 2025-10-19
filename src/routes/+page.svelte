@@ -5,7 +5,7 @@
     import TournamentSelector from "$lib/components/TournamentSelector.svelte";
     import RideSelector from "$lib/components/RideSelector.svelte";
     import QueueViewer from "$lib/components/QueueViewer.svelte";
-    import { RideEntryState, RideEntryStatesReadable, type Ride, type TournamentBasic } from "$lib/ts/models/databaseModels";
+    import { RideEntryState, type Ride, type TournamentBasic } from "$lib/ts/models/databaseModels";
     import OmniAPI from "$lib/ts/OmniAPI/OmniAPI";
     import "./style.css";
     import RideStatusViewer from "$lib/components/RideStatusViewer.svelte";
@@ -26,7 +26,6 @@
     let lockStatus: boolean = false;
     let selectedTournamentId: number | null = $state(null);
     let selectedRideId: number | null = $state(null);
-    let canSave = $state(false);
     let timePenalty = $state(0);
     let currentRideEntryId: number | null = $state(null);
     let previousState: RideEntryState = $state(RideEntryState.NotStarted);
@@ -35,7 +34,6 @@
         runTime = 0;
         runState = RideEntryState.NotStarted;
         lapsLeft = totalLaps;
-        canSave = false;
         lockStatus = false;
         previousState = RideEntryState.NotStarted;
         runFinishedTime = 0;
@@ -44,13 +42,11 @@
     function disqualify() {
         if(currentRideEntryId == null) return;
         if(runState == RideEntryState.Disqualified) {
-            canSave = previousState == RideEntryState.Finished ? true : false;
             runState = previousState;
         }
         else {
             previousState = runState == RideEntryState.InProgress ? RideEntryState.NotStarted : runState;
             runState = RideEntryState.Disqualified;
-            canSave = true;
         }
     }
 
@@ -62,18 +58,15 @@
         if(newState != runState) {
             if(newState == RideEntryState.InProgress) {
                 timer = setInterval(() => runTime += 100, 100);
-                canSave = false;
             }
             else if(newState == RideEntryState.Finished) {
                 clearInterval(timer);
                 runTime = data.timeMs;
                 lockStatus = true;
-                canSave = true;
                 runFinishedTime = data.timeMs;
             }
             else if(newState == RideEntryState.NotStarted) {
                 runState = RideEntryState.NotStarted;
-                canSave = false;
                 clearInterval(timer);
                 runTime = 0;
             }
@@ -153,11 +146,11 @@
             <TournamentSelector {tournamentsList} bind:selectedTournamentId={selectedTournamentId}/>
             <RideSelector {ridesList} bind:selectedRideId={selectedRideId}/>
             <RideStatusViewer {runState} {runTime} {lapsLeft} {totalLaps}/>
-            {#if (canSave && runState != RideEntryState.Disqualified)}
+            {#if runState == RideEntryState.Finished}
                 <p>Nadaj karę czasową (s): <input type="number" bind:value={timePenalty}></p>
             {/if}
             <div class="button-container">
-                <button onclick={finishRideEntry} disabled={!canSave} class="save-button">Zapisz</button>
+                <button onclick={finishRideEntry} disabled={runState != RideEntryState.Finished && runState != RideEntryState.Disqualified} class="save-button">Zapisz</button>
                 <button onclick={disqualify} disabled={currentRideEntryId == null} class="disqualify-button">
                     {#if runState == RideEntryState.Disqualified}
                     Cofnij dyskwalifikację
