@@ -30,7 +30,6 @@ const selectLeaderboard = select('RideEntries', ['MIN(TimeMilliseconds + IF(Pena
     .where(`RideEntries.TimeMilliseconds IS NOT NULL`)
     .where(`Rides.TournamentId = ?`)
     .orderBy('bestTime', true)
-    .debug()
     .prepare<[tournamentId: number]>();
 
 export function GET({ params }) {

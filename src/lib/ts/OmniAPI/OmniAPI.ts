@@ -161,7 +161,7 @@ const OmniAPI = {
       rideId: rideId.toString(),
       entryId: entryId.toString()
     }, {
-      penaltyTime
+      penaltyMilliseconds: penaltyTime
     }) as void;
   }
 };
