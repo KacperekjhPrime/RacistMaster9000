@@ -21,14 +21,16 @@ const selectRides = select('Rides', ['RideId AS rideId', 'RideStateId AS rideSta
     .where('Rides.TournamentId = ?')
     .prepare<[number]>();
 
-const selectLeaderboard = select('RideEntries', ['MIN(TimeMilliseconds + PenaltyMilliseconds) AS bestTime', 'RiderId AS riderId'] as const)
+const selectLeaderboard = select('RideEntries', ['MIN(TimeMilliseconds + IF(PenaltyMilliseconds IS NULL, 0, PenaltyMilliseconds)) AS bestTime', 'RiderId AS riderId'] as const)
     .join('Rides', [] as const, 'RideId')
     .join('Riders', ['Name AS riderName', 'Surname AS riderSurname', 'SchoolId AS schoolId'] as const, 'RiderId')
     .join('Schools', ['Acronym AS schoolNameAcronym'] as const, 'SchoolId')
     .groupBy('RiderId')
     .where(`RideEntries.RideEntryStateId = ${RideEntryState.Finished}`)
+    .where(`RideEntries.TimeMilliseconds IS NOT NULL`)
     .where(`Rides.TournamentId = ?`)
     .orderBy('bestTime', true)
+    .debug()
     .prepare<[tournamentId: number]>();
 
 export function GET({ params }) {
